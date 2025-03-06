@@ -40,7 +40,7 @@ import {
 	updateConta,
 	deleteConta,
 } from "../api/contaService";
-import { getUser } from "@/api/authService";
+import { getUser } from "../api/authService";
 
 export default {
 	data() {
