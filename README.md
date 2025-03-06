@@ -12,7 +12,6 @@
 │── /src/
 │   ├── /api/                  # Serviços de API e integração com Supabase
 │   │   ├── authService.ts     # Gerenciamento de autenticação
-│   │   ├── dbService.ts       # Comunicação com o banco (CRUD)
 │   │   ├── storageService.ts  # Gerenciamento de arquivos no Supabase
 │   │   ├── supabase.ts        # Configuração do Supabase
 │   │
@@ -75,6 +74,114 @@
     - Loja de mascotes e acessórios adquiridos com moedas virtuais.
     - Desafios financeiros com recompensas (ex.: "1 Semana Sem Gastar em Fast Food").
     - Integração com notificações para que as mascotes interajam com o usuário.
+
+## Diagrama Entidade-Relacionamento (DER)
+```
+1. Usuários (usuarios)
+id (UUID, PK) (Gerenciado pelo Supabase Auth)
+email (VARCHAR, UNIQUE) (Gerenciado pelo Supabase Auth)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+2. Contas (contas)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id)
+nome (VARCHAR)
+tipo (ENUM: "carteira", "conta corrente", "conta digital")
+saldo_inicial (DECIMAL)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+3. Categorias (categorias)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id, NULL para categorias padrão)
+nome (VARCHAR)
+tipo (ENUM: "receita", "despesa")
+icone (VARCHAR, opcional)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+4. Transações (transacoes)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id)
+conta_id (UUID, FK -> contas.id)
+categoria_id (UUID, FK -> categorias.id)
+tipo (ENUM: "receita", "despesa")
+valor (DECIMAL)
+descricao (TEXT, opcional)
+data (DATE)
+recorrente (BOOLEAN, DEFAULT FALSE)
+parcela_atual (INTEGER, opcional)
+total_parcelas (INTEGER, opcional)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+5. Orçamentos (orcamentos)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id)
+categoria_id (UUID, FK -> categorias.id)
+valor_limite (DECIMAL)
+mes_ano (VARCHAR, formato "YYYY-MM")
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+6. Notificações (notificacoes)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id)
+tipo (ENUM: "conta_vencimento", "resumo_financeiro", "outro")
+mensagem (TEXT)
+enviada (BOOLEAN, DEFAULT FALSE)
+data_envio (TIMESTAMP, opcional)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+7. Mascotes (mascotes)
+id (UUID, PK)
+nome (VARCHAR)
+imagem_url (TEXT)
+preco_moedas (INTEGER)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+8. Mascotes do Usuário (mascotes_usuarios)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id)
+mascote_id (UUID, FK -> mascotes.id)
+nivel (INTEGER, DEFAULT 1)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+9. Conquistas (conquistas)
+id (UUID, PK)
+nome (VARCHAR)
+descricao (TEXT)
+recompensa_moedas (INTEGER)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+10. Conquistas do Usuário (conquistas_usuarios)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id)
+conquista_id (UUID, FK -> conquistas.id)
+data_conquista (TIMESTAMP, DEFAULT NOW())
+
+11. Desafios (desafios)
+id (UUID, PK)
+nome (VARCHAR)
+descricao (TEXT)
+recompensa_moedas (INTEGER)
+duracao_dias (INTEGER)
+data_criacao (TIMESTAMP, DEFAULT NOW())
+data_atualizacao (TIMESTAMP, DEFAULT NOW())
+
+12. Desafios do Usuário (desafios_usuarios)
+id (UUID, PK)
+usuario_id (UUID, FK -> usuarios.id)
+desafio_id (UUID, FK -> desafios.id)
+status (ENUM: "em progresso", "concluido", "falhou")
+data_inicio (TIMESTAMP)
+data_fim (TIMESTAMP, opcional)
+```
 
 # Vuetify (Default)
 

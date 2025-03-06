@@ -35,13 +35,13 @@ router.isReady().then(() => {
 })
 
 router.beforeEach(async (to) => {
-  const user = await getUser()
-  console.log(user)
-
-  const requiresAuth = ['/dashboard', '/home'].includes(to.path)
-
-  if (requiresAuth && !user) {
-    return { path: '/login', query: { redirect: to.fullPath } }
+  const requiresAuth = ['/login'].includes(to.path)
+  console.log(requiresAuth)
+  if (!requiresAuth) {
+    const user = await getUser()
+    if (!user) {
+      return { path: '/login', query: { redirect: to.fullPath } }
+    }
   }
 })
 
