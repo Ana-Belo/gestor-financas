@@ -43,6 +43,7 @@ import {
 import { getUser } from "../api/authService";
 
 export default {
+	name: "Contas",
 	data() {
 		return {
 			dialog: false,

@@ -44,6 +44,7 @@ import { getUser } from "../api/authService";
 import { defineComponent } from "vue";
 
 export default defineComponent({
+	name: "Categorias",
 	data() {
 		return {
 			dialog: false,

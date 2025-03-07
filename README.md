@@ -22,7 +22,6 @@
 │   ├── /pages/                # Páginas principais
 │   │   ├── Home.vue           # Página inicial
 │   │   ├── Login.vue          # Tela de login
-│   │   ├── Dashboard.vue      # Tela após login
 │   │
 │   ├── /router/               # Configuração de rotas
 │   │   ├── index.ts

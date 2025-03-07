@@ -12,7 +12,13 @@ import { getUser } from '@/api/authService'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: setupLayouts(routes),
+  routes: [
+    ...setupLayouts(routes),
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/home',
+    },
+  ],
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804

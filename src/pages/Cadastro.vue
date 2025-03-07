@@ -1,35 +1,30 @@
 <template>
 	<v-container class="fill-height d-flex justify-center align-center">
 		<v-card class="login-card pa-5 bg-transparent" flat>
-			<v-card-title class="text-center mb-15">
+			<v-card-title class="text-center mb-10">
 				<Logo />
 			</v-card-title>
 
 			<v-card-text>
-				<v-form @submit.prevent="handleLogin">
+				<v-form>
+					<FormField v-model="fullName" label="Nome completo" prependIcon="mdi-account-outline" />
+
 					<FormField v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
 
 					<FormField v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
 
+					<FormField
+						v-model="passwordConfirm"
+						label="Confirme a senha"
+						prependIcon="mdi-lock-outline"
+						isPassword
+					/>
+
 					<v-row align="center" justify="space-between">
-						<v-checkbox label="Lembre de mim" hide-details></v-checkbox>
-						<a href="#" class="text-primary text-decoration-none">Esqueceu a senha?</a>
+						<v-checkbox label="Eu aceito os termos de uso" hide-details></v-checkbox>
 					</v-row>
 
-					<v-btn
-						type="submit"
-						block
-						color="primary"
-						class="mt-4"
-						size="large"
-						rounded="lg"
-						:disabled="loading"
-					>
-						<v-progress-circular v-if="loading" indeterminate color="white" size="20" />
-						<span v-else>Entrar</span>
-					</v-btn>
-
-					<v-alert v-if="errorMessage" type="error" class="my-2">{{ errorMessage }}</v-alert>
+					<v-btn block color="primary" class="mt-4" size="large" rounded="lg">Criar conta</v-btn>
 
 					<v-divider class="my-5"></v-divider>
 
@@ -49,12 +44,12 @@
 					</v-row>
 
 					<p class="text-center mt-4">
-						Não tem uma conta?
+						Já tem uma conta?
 						<v-btn
 							variant="text"
-							:to="'/cadastro'"
+							:to="'/login'"
 							class="text-primary font-weight-bold text-decoration-none"
-						>Cadastre-se</v-btn>
+						>Login</v-btn>
 					</p>
 				</v-form>
 			</v-card-text>
@@ -66,35 +61,20 @@
 import { defineComponent } from "vue";
 import FormField from "../components/FormField.vue";
 import Logo from "../components/Logo.vue";
-import { login } from "../api/authService";
 
 export default defineComponent({
-	name: "Login",
+	name: "Cadastro",
 	components: { FormField, Logo },
 	data() {
 		return {
 			showPassword: false,
+			fullName: "",
 			email: "",
 			password: "",
-			errorMessage: "",
-			loading: false,
+			confirmPassword: "",
 		};
 	},
-	methods: {
-		async handleLogin() {
-			this.loading = true;
-			this.errorMessage = "";
-
-			try {
-				await login(this.email, this.password);
-				this.$router.push("/home");
-			} catch (error) {
-				this.errorMessage = error.message;
-			} finally {
-				this.loading = false;
-			}
-		},
-	},
+	methods: {},
 });
 </script>
 

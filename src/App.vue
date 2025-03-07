@@ -1,9 +1,11 @@
 <template>
-  <v-app>
-    <router-view />
-  </v-app>
+	<v-app class="custom-gradient">
+		<router-view />
+	</v-app>
 </template>
 
-<script lang="ts" setup>
-  //
-</script>
+<style scoped>
+.custom-gradient {
+	background: linear-gradient(to bottom, #f7f5e3, #ffffff);
+}
+</style>
