@@ -16,7 +16,7 @@ export async function getCategorias(usuarioId: string) {
     return data;
 }
 
-// Função para buscar categoria pelo id
+// Função para buscar categoria pelo id da categoria
 export async function getCategoriaById(categoriaId: string) {
     const { data, error } = await supabase
         .from('categorias')
