@@ -30,3 +30,22 @@ export async function getUser() {
 
     return session.user;
 }
+
+export async function register(email: string, password: string, fullName: string) {
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                full_name: fullName,
+            },
+        },
+    });
+
+    if (error) {
+        console.error("Erro ao cadastrar usuário:", error.message);
+        throw error;
+    }
+
+    return data;
+}

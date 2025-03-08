@@ -1,113 +1,111 @@
 <template>
-	<v-container>
-		<v-row class="my-5">
-			<v-col cols="6">
-				<v-btn :to="'/home'">Página Inicial</v-btn>
-			</v-col>
-			<v-col cols="6" class="text-right">
-				<v-btn @click="openDialogAdd">Adicionar Categoria</v-btn>
-			</v-col>
-		</v-row>
+	<v-main class="bg-white">
+		<v-container>
+			<v-app-bar>
+				<v-btn icon @click="$router.go(-1)">
+					<v-icon>mdi-arrow-left</v-icon>
+				</v-btn>
+				<v-toolbar-title>Categorias</v-toolbar-title>
+				<v-spacer></v-spacer>
+				<v-btn
+					icon
+					class="bg-blue mr-4"
+					color="white"
+					density="compact"
+					@click="$router.push('/formcategoria')"
+				>
+					<v-icon>mdi-plus</v-icon>
+				</v-btn>
+			</v-app-bar>
 
-		<v-data-table :headers="headers" :items="categorias" item-key="id">
-			<template v-slot:item.actions="{ item }">
-				<v-btn color="primary" class="mr-3" @click="editCategoria(item)">Editar</v-btn>
-				<v-btn color="error" @click="delCategoria(item.id)">Deletar</v-btn>
-			</template>
-		</v-data-table>
+			<FormField v-model="search" label="Pesquisar categorias" prependIcon="mdi-magnify" class="mb-3" />
 
-		<v-dialog v-model="dialog" max-width="500px">
-			<v-card>
-				<v-card-title>{{ formMode === 'edit' ? 'Editar Categoria' : 'Adicionar Categoria' }}</v-card-title>
-				<v-card-text>
-					<v-text-field v-model="nome" label="Nome da Categoria" />
-					<v-select v-model="tipo" :items="tiposCategoria" label="Tipo" />
-					<v-text-field v-model="icone" label="Ícone" />
-				</v-card-text>
-				<v-card-actions>
-					<v-btn @click="dialog = false">Cancelar</v-btn>
-					<v-btn @click="saveCategoria()">{{ formMode === 'edit' ? 'Salvar' : 'Adicionar' }}</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
-	</v-container>
+			<v-row v-for="(category, index) in paginatedCategories" :key="index">
+				<v-col cols="auto">
+					<v-avatar size="30" :color="category.cor_icone">
+						<v-icon size="18">{{category.icone}}</v-icon>
+					</v-avatar>
+				</v-col>
+				<v-col>{{category.nome}}</v-col>
+				<v-col class="text-center">
+					<v-chip v-if="category.tipo === 'Despesa'" color="error">{{category.tipo}}</v-chip>
+					<v-chip v-else color="success">{{category.tipo}}</v-chip>
+				</v-col>
+				<v-col cols="auto">
+					<v-btn
+						icon
+						flat
+						density="compact"
+						@click="$router.push({ path: '/formcategoria', query: { id: category.id } })"
+					>
+						<v-icon size="18" color="grey">mdi-pencil</v-icon>
+					</v-btn>
+					<v-btn icon flat density="compact">
+						<v-icon size="18" color="grey" @click="delCategoria(category.id)">mdi-delete</v-icon>
+					</v-btn>
+				</v-col>
+			</v-row>
+		</v-container>
+	</v-main>
+	<v-footer class="d-flex justify-center pa-4">
+		<v-btn icon @click="prevPage" :disabled="currentPage === 1" density="compact">
+			<v-icon>mdi-chevron-left</v-icon>
+		</v-btn>
+		<small class="mx-3">Página {{currentPage}} de {{totalPages}}</small>
+		<v-btn icon @click="nextPage" :disabled="currentPage === totalPages" density="compact">
+			<v-icon>mdi-chevron-right</v-icon>
+		</v-btn>
+	</v-footer>
 </template>
 
 <script lang="ts">
-import {
-	getCategorias,
-	addCategoria,
-	updateCategoria,
-	deleteCategoria,
-} from "../api/categoriaService";
-import { getUser } from "../api/authService";
 import { defineComponent } from "vue";
+import { getCategorias, deleteCategoria } from "../api/categoriaService";
+import { getUser } from "../api/authService";
 
 export default defineComponent({
 	name: "Categorias",
 	data() {
 		return {
-			dialog: false,
-			formMode: "add" as "edit" | "add",
-			categoriaId: "",
-			nome: "",
-			tipo: "",
-			icone: "",
-			tiposCategoria: ["receita", "despesa"],
-			categorias: [] as any[],
-			headers: [
-				{ title: "Nome", key: "nome" },
-				{ title: "Tipo", key: "tipo" },
-				{ title: "Ícone", key: "icone" },
-				{
-					title: "Ações",
-					key: "actions",
-					sortable: false,
-					align: "center",
-				},
-			],
+			search: "",
+			categories: [],
+			currentPage: 1,
+			itemsPerPage: 10,
 		};
+	},
+	computed: {
+		filteredCategories() {
+			return this.categories.filter((category) =>
+				category.nome.toLowerCase().includes(this.search.toLowerCase())
+			);
+		},
+		paginatedCategories() {
+			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+			const endIndex = startIndex + this.itemsPerPage;
+			return this.filteredCategories.slice(startIndex, endIndex);
+		},
+		totalPages() {
+			return Math.ceil(
+				this.filteredCategories.length / this.itemsPerPage
+			);
+		},
 	},
 	methods: {
 		async fetchCategorias() {
 			const user = await getUser();
 			const usuarioId = user?.id || "";
-			this.categorias = await getCategorias(usuarioId);
+			this.categories = await getCategorias(usuarioId);
+			console.log("aqui", await getCategorias(usuarioId));
 		},
-		openDialogAdd() {
-			this.formMode = "add";
-			this.nome = "";
-			this.tipo = "";
-			this.icone = "";
-			this.dialog = true;
-		},
-		async saveCategoria() {
-			if (this.formMode === "add") {
-				const user = await getUser();
-				await addCategoria(
-					user?.id || "",
-					this.nome,
-					this.tipo,
-					this.icone
-				);
-			} else {
-				await updateCategoria(
-					this.categoriaId,
-					this.nome,
-					this.tipo,
-					this.icone
-				);
+		nextPage() {
+			if (this.currentPage < this.totalPages) {
+				this.currentPage++;
 			}
-			this.dialog = false;
-			this.fetchCategorias();
 		},
-		editCategoria(item: any) {
-			this.formMode = "edit";
-			this.nome = item.nome;
-			this.tipo = item.tipo;
-			this.icone = item.icone;
-			this.categoriaId = item.id;
-			this.dialog = true;
+		prevPage() {
+			if (this.currentPage > 1) {
+				this.currentPage--;
+			}
 		},
 		async delCategoria(categoriaId: string) {
 			await deleteCategoria(categoriaId);

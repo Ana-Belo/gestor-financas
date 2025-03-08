@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Alerta: typeof import('./components/Alerta.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     FormField: typeof import('./components/FormField.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']

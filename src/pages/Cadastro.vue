@@ -6,7 +6,7 @@
 			</v-card-title>
 
 			<v-card-text>
-				<v-form>
+				<v-form @submit.prevent="handleRegister">
 					<FormField v-model="fullName" label="Nome completo" prependIcon="mdi-account-outline" />
 
 					<FormField v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
@@ -24,7 +24,9 @@
 						<v-checkbox label="Eu aceito os termos de uso" hide-details></v-checkbox>
 					</v-row>
 
-					<v-btn block color="primary" class="mt-4" size="large" rounded="lg">Criar conta</v-btn>
+					<v-btn type="submit" block color="primary" class="mt-4" size="large" rounded="lg">Criar conta</v-btn>
+
+					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
 
 					<v-divider class="my-5"></v-divider>
 
@@ -59,22 +61,45 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import FormField from "../components/FormField.vue";
-import Logo from "../components/Logo.vue";
+import { register } from "../api/authService";
 
 export default defineComponent({
 	name: "Cadastro",
-	components: { FormField, Logo },
 	data() {
 		return {
+			showAlert: false,
+			alertType: "success",
+			alertMessage: "",
 			showPassword: false,
 			fullName: "",
 			email: "",
 			password: "",
-			confirmPassword: "",
+			passwordConfirm: "",
 		};
 	},
-	methods: {},
+	methods: {
+		async handleRegister() {
+			try {
+				if (this.password !== this.passwordConfirm) {
+					this.alertType = "error";
+					this.alertMessage = "As senhas não coincidem.";
+					this.showAlert = true;
+					return;
+				}
+				await register(this.email, this.password, this.fullName);
+				this.alertType = "success";
+				this.alertMessage =
+					"Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.";
+				this.showAlert = true;
+				this.$router.push("/login");
+			} catch (error) {
+				console.error("Erro ao cadastrar:", error);
+				this.alertType = "error";
+				this.alertMessage = "Erro ao cadastrar. Tente novamente.";
+				this.showAlert = true;
+			}
+		},
+	},
 });
 </script>
 

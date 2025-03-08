@@ -1,11 +1,11 @@
 <template>
-	<v-main>
-		<v-app-bar flat>
+	<v-main class="bg-white">
+		<v-app-bar>
 			<v-btn icon @click="drawer = !drawer">
 				<v-icon>mdi-menu</v-icon>
 			</v-btn>
-			<v-avatar color="primary" class="ml-2">A</v-avatar>
-			<v-toolbar-title>Olá, Alex</v-toolbar-title>
+			<v-avatar color="primary" class="ml-2">{{ getName().split("")[0] }}</v-avatar>
+			<v-toolbar-title>Olá, {{ getName() }}</v-toolbar-title>
 			<v-spacer></v-spacer>
 			<v-btn icon>
 				<v-icon>mdi-bell-outline</v-icon>
@@ -67,29 +67,31 @@
 				</v-col>
 			</v-row>
 
-			<v-card class="home-card pa-1" rounded="lg" flat elevation="1">
+			<div class="d-flex justify-space-between align-center mb-5">
+				<div class="text-subtitle-1 font-weight-bold">Transações Recentes</div>
+				<v-btn flat size="x-small" class="bg-transparent">Ver mais</v-btn>
+			</div>
+			<v-card
+				v-for="(transaction, index) in transactions"
+				:key="index"
+				class="home-card pa-1 mb-2"
+				rounded="lg"
+				flat
+				elevation="1"
+			>
 				<v-card-text>
-					<div class="d-flex justify-space-between align-center mb-5">
-						<div class="text-subtitle-1 font-weight-bold">Transações Recentes</div>
-						<v-btn color="primary" flat rounded="lg" size="x-small">Ver mais</v-btn>
-					</div>
-
-					<v-row>
-						<v-col cols="12" v-for="(transaction, index) in transactions" :key="index">
-							<v-row no-gutters align="center">
-								<v-col cols="2">
-									<v-avatar size="40" :color="transaction.colorIcon">
-										<v-icon>{{ transaction.icon }}</v-icon>
-									</v-avatar>
-								</v-col>
-								<v-col cols="6">
-									<div class="text-subtitle-1">{{ transaction.title }}</div>
-									<div class="text-caption">{{ transaction.subtitle }}</div>
-								</v-col>
-								<v-col cols="4" class="text-end font-weight-bold">
-									<div :class="transaction.color">{{ transaction.amount }}</div>
-								</v-col>
-							</v-row>
+					<v-row no-gutters align="center">
+						<v-col cols="2">
+							<v-avatar size="40" :color="transaction.colorIcon">
+								<v-icon>{{ transaction.icon }}</v-icon>
+							</v-avatar>
+						</v-col>
+						<v-col cols="6">
+							<div class="text-subtitle-1">{{ transaction.title }}</div>
+							<div class="text-caption">{{ transaction.subtitle }}</div>
+						</v-col>
+						<v-col cols="4" class="text-end font-weight-bold">
+							<div :class="transaction.color">{{ transaction.amount }}</div>
 						</v-col>
 					</v-row>
 				</v-card-text>
@@ -119,13 +121,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { logout } from "../api/authService";
+import { logout, getUser } from "../api/authService";
 
 export default defineComponent({
 	name: "Home",
 	data() {
 		return {
 			drawer: false,
+			user: {},
 			menuItems: [
 				{
 					icon: "mdi-view-list",
@@ -177,6 +180,7 @@ export default defineComponent({
 			],
 		};
 	},
+
 	methods: {
 		async handleLogout() {
 			try {
@@ -186,6 +190,13 @@ export default defineComponent({
 				console.error("Erro ao fazer logout:", error);
 			}
 		},
+		getName() {
+			const fullName = this.user?.user_metadata?.full_name || "";
+			return fullName.split(" ")[0];
+		},
+	},
+	async created() {
+		this.user = await getUser();
 	},
 });
 </script>

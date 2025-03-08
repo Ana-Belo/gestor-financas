@@ -6,10 +6,26 @@ export async function getCategorias(usuarioId: string) {
     const { data, error } = await supabase
         .from('categorias')
         .select('*')
-        .eq('usuario_id', usuarioId);
+        .or(`usuario_id.eq.${usuarioId},usuario_id.is.null`);
 
     if (error) {
         console.error('Erro ao buscar categorias:', error.message);
+        throw error;
+    }
+
+    return data;
+}
+
+// Função para buscar categoria pelo id
+export async function getCategoriaById(categoriaId: string) {
+    const { data, error } = await supabase
+        .from('categorias')
+        .select('*')
+        .eq('id', categoriaId)
+        .single(); 
+
+    if (error) {
+        console.error('Erro ao buscar categoria:', error.message);
         throw error;
     }
 

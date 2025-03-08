@@ -29,7 +29,13 @@
 						<span v-else>Entrar</span>
 					</v-btn>
 
-					<v-alert v-if="errorMessage" type="error" class="my-2">{{ errorMessage }}</v-alert>
+					<v-alert
+						v-if="errorMessage"
+						type="error"
+						class="my-5"
+						variant="outlined"
+						rounded="lg"
+					>{{ errorMessage }}</v-alert>
 
 					<v-divider class="my-5"></v-divider>
 
@@ -64,13 +70,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import FormField from "../components/FormField.vue";
-import Logo from "../components/Logo.vue";
 import { login } from "../api/authService";
 
 export default defineComponent({
 	name: "Login",
-	components: { FormField, Logo },
 	data() {
 		return {
 			showPassword: false,
