@@ -1,12 +1,16 @@
 <template>
+	<!-- Container centralizado para o formulário de cadastro -->
 	<v-container class="fill-height d-flex justify-center align-center">
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<v-card-title class="text-center mb-10">
+				<!-- Componente de logo -->
 				<Logo />
 			</v-card-title>
 
 			<v-card-text>
+				<!-- Formulário de cadastro -->
 				<v-form @submit.prevent="handleRegister">
+					<!-- Campos do formulário -->
 					<FormField v-model="fullName" label="Nome completo" prependIcon="mdi-account-outline" />
 
 					<FormField v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
@@ -20,18 +24,22 @@
 						isPassword
 					/>
 
+					<!-- Checkbox para aceitar os termos de uso -->
 					<v-row align="center" justify="space-between">
 						<v-checkbox label="Eu aceito os termos de uso" hide-details></v-checkbox>
 					</v-row>
 
+					<!-- Botão de criação de conta -->
 					<v-btn type="submit" block color="primary" class="mt-4" size="large" rounded="lg">Criar conta</v-btn>
 
+					<!-- Componente de alerta para exibir mensagens -->
 					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
 
 					<v-divider class="my-5"></v-divider>
 
 					<p class="text-center text-grey-darken-1">Ou continue com</p>
 
+					<!-- Opções de login social -->
 					<v-row class="mt-2">
 						<v-col cols="6">
 							<v-btn block variant="outlined" rounded="lg">
@@ -45,6 +53,7 @@
 						</v-col>
 					</v-row>
 
+					<!-- Link para a página de login caso o usuário já tenha conta -->
 					<p class="text-center mt-4">
 						Já tem uma conta?
 						<v-btn
@@ -67,30 +76,35 @@ export default defineComponent({
 	name: "Cadastro",
 	data() {
 		return {
-			showAlert: false,
-			alertType: "success",
-			alertMessage: "",
-			showPassword: false,
-			fullName: "",
-			email: "",
-			password: "",
-			passwordConfirm: "",
+			showAlert: false, // Controla a exibição do alerta
+			alertType: "success", // Tipo do alerta (sucesso ou erro)
+			alertMessage: "", // Mensagem do alerta
+			fullName: "", // Armazena o nome completo do usuário
+			email: "", // Armazena o email do usuário
+			password: "", // Armazena a senha do usuário
+			passwordConfirm: "", // Armazena a confirmação da senha
 		};
 	},
 	methods: {
+		// Método para registrar um novo usuário
 		async handleRegister() {
 			try {
+				// Verifica se as senhas coincidem
 				if (this.password !== this.passwordConfirm) {
 					this.alertType = "error";
 					this.alertMessage = "As senhas não coincidem.";
 					this.showAlert = true;
 					return;
 				}
+
+				// Chama a API de registro
 				await register(this.email, this.password, this.fullName);
 				this.alertType = "success";
 				this.alertMessage =
 					"Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.";
 				this.showAlert = true;
+
+				// Redireciona para a página de login após o cadastro
 				this.$router.push("/login");
 			} catch (error) {
 				console.error("Erro ao cadastrar:", error);

@@ -1,17 +1,28 @@
 <template>
+	<!-- Container principal da aplicação -->
 	<v-main class="bg-black">
+		<!-- Barra de aplicativo no topo -->
 		<v-app-bar>
+			<!-- Botão para abrir/fechar o menu lateral -->
 			<v-btn icon @click="drawer = !drawer">
 				<v-icon>mdi-menu</v-icon>
 			</v-btn>
-			<v-avatar color="primary" class="ml-2">{{ getName().split("")[0] }}</v-avatar>
+
+			<!-- Avatar do usuário com a inicial do nome -->
+			<v-avatar color="primary" class="ml-2">{{ getName().split(" ")[0] }}</v-avatar>
+
+			<!-- Saudação com o nome do usuário -->
 			<v-toolbar-title>Olá, {{ getName() }}</v-toolbar-title>
+
 			<v-spacer></v-spacer>
+
+			<!-- Ícone de notificações -->
 			<v-btn icon>
 				<v-icon>mdi-bell-outline</v-icon>
 			</v-btn>
 		</v-app-bar>
 
+		<!-- Menu lateral de navegação -->
 		<v-navigation-drawer v-model="drawer" temporary>
 			<v-list nav>
 				<v-list-item
@@ -26,6 +37,7 @@
 		</v-navigation-drawer>
 
 		<v-container>
+			<!-- Card de saldo total -->
 			<v-card class="home-card pa-1 mb-4" rounded="lg" flat elevation="1">
 				<v-card-text>
 					<div class="text-start mb-4">
@@ -34,11 +46,13 @@
 					</div>
 
 					<v-row justify="center">
+						<!-- Botão para adicionar receita -->
 						<v-col cols="6">
 							<v-btn block color="green" flat rounded="lg">
 								<v-icon left class="mr-3">mdi-arrow-up</v-icon>Receita
 							</v-btn>
 						</v-col>
+						<!-- Botão para adicionar despesa -->
 						<v-col cols="6">
 							<v-btn block color="red" flat rounded="lg">
 								<v-icon left class="mr-3">mdi-arrow-down</v-icon>Despesa
@@ -49,6 +63,7 @@
 			</v-card>
 
 			<v-row class="mb-2 fill-height">
+				<!-- Card de despesas pendentes -->
 				<v-col cols="6" class="d-flex flex-column">
 					<v-card class="home-card pa-3" rounded="lg" flat elevation="1" style="flex: 1;">
 						<div class="text-subtitle-2">
@@ -57,20 +72,24 @@
 						<div class="text-subtitle-1 text-red font-weight-bold">R$ 1.240,00</div>
 					</v-card>
 				</v-col>
+				<!-- Card de receitas pendentes -->
 				<v-col cols="6" class="d-flex flex-column">
 					<v-card class="home-card pa-3" rounded="lg" flat elevation="1" style="flex: 1;">
 						<div class="text-subtitle-2">
-							<v-icon left class="mr-3" color="green">mdi-arrow-top-right</v-icon>Receitas Pendente
+							<v-icon left class="mr-3" color="green">mdi-arrow-top-right</v-icon>Receitas Pendentes
 						</div>
 						<div class="text-subtitle-1 text-green font-weight-bold">R$ 3.500,00</div>
 					</v-card>
 				</v-col>
 			</v-row>
 
+			<!-- Seção de transações recentes -->
 			<div class="d-flex justify-space-between align-center mb-5">
 				<div class="text-subtitle-1 font-weight-bold">Transações Recentes</div>
 				<v-btn flat size="x-small" class="bg-transparent">Ver mais</v-btn>
 			</div>
+
+			<!-- Lista de transações -->
 			<v-card
 				v-for="(transaction, index) in transactions"
 				:key="index"
@@ -98,6 +117,7 @@
 			</v-card>
 		</v-container>
 
+		<!-- Navegação inferior -->
 		<v-bottom-navigation grow color="white" class="mt-4">
 			<v-btn>
 				<v-icon>mdi-home</v-icon>
