@@ -1,5 +1,5 @@
 <template>
-	<v-main class="bg-white">
+	<v-main class="bg-black">
 		<v-app-bar>
 			<v-btn icon @click="drawer = !drawer">
 				<v-icon>mdi-menu</v-icon>

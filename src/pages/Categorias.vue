@@ -1,5 +1,5 @@
 <template>
-	<v-main class="bg-white">
+	<v-main>
 		<v-container>
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -37,10 +37,11 @@
 						flat
 						density="compact"
 						@click="$router.push({ path: '/formcategoria', query: { id: category.id } })"
+						color="transparent"
 					>
 						<v-icon size="18" color="grey">mdi-pencil</v-icon>
 					</v-btn>
-					<v-btn icon flat density="compact">
+					<v-btn icon flat density="compact" color="transparent">
 						<v-icon size="18" color="grey" @click="delCategoria(category.id)">mdi-delete</v-icon>
 					</v-btn>
 				</v-col>
