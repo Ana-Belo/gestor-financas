@@ -22,7 +22,7 @@ export async function getCategoriaById(categoriaId: string) {
         .from('categorias')
         .select('*')
         .eq('id', categoriaId)
-        .single(); 
+        .single();
 
     if (error) {
         console.error('Erro ao buscar categoria:', error.message);
@@ -33,7 +33,7 @@ export async function getCategoriaById(categoriaId: string) {
 }
 
 // Função para inserir uma categoria
-export async function addCategoria(usuarioId: string, nome: string, tipo: string, icone: string) {
+export async function addCategoria(usuarioId: string, nome: string, tipo: string, icone: string, corIcone: string) {
     const id = uuidv4();
     const dataCriacao = new Date();
     const dataAtualizacao = new Date();
@@ -41,7 +41,7 @@ export async function addCategoria(usuarioId: string, nome: string, tipo: string
     const { data, error } = await supabase
         .from('categorias')
         .insert([{
-            id, usuario_id: usuarioId, nome, tipo, icone,
+            id, usuario_id: usuarioId, nome, tipo, icone, cor_icone: corIcone,
             data_criacao: dataCriacao,
             data_atualizacao: dataAtualizacao
         }]);
@@ -55,13 +55,13 @@ export async function addCategoria(usuarioId: string, nome: string, tipo: string
 }
 
 // Função para atualizar uma categoria
-export async function updateCategoria(categoriaId: string, nome: string, tipo: string, icone: string) {
+export async function updateCategoria(categoriaId: string, nome: string, tipo: string, icone: string, corIcone: string) {
     const dataAtualizacao = new Date();
 
     const { data, error } = await supabase
         .from('categorias')
         .update({
-            nome, tipo, icone,
+            nome, tipo, icone, cor_icone: corIcone,
             data_atualizacao: dataAtualizacao
         })
         .eq('id', categoriaId);
