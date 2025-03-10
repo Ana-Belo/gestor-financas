@@ -1,17 +1,24 @@
 <template>
 	<v-main>
 		<v-container>
+			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
 					<v-icon>mdi-arrow-left</v-icon>
+					<!-- Ícone de voltar -->
 				</v-btn>
+				<!-- Define o título da página dinamicamente -->
 				<v-toolbar-title>{{ formMode === 'add' ? 'Nova' : 'Editar' }} Categoria</v-toolbar-title>
 				<v-spacer></v-spacer>
+				<!-- Espaço para alinhar os itens corretamente -->
 			</v-app-bar>
 
+			<!-- Card para o formulário de categoria -->
 			<v-card class="pa-5 mb-4 text-center">
-				<FormField v-model="categoria.nome" label="Nome da Categoria" prependIcon="mdi-magnify" />
+				<!-- Campo para inserir o nome da categoria -->
+				<FormField v-model="categoria.nome" label="Nome da Categoria" />
 				<v-row justify="center">
+					<!-- Botão para selecionar categoria do tipo "Receita" -->
 					<v-col cols="6">
 						<v-btn
 							block
@@ -23,6 +30,7 @@
 							<v-icon left class="mr-3">mdi-arrow-up</v-icon>Receita
 						</v-btn>
 					</v-col>
+					<!-- Botão para selecionar categoria do tipo "Despesa" -->
 					<v-col cols="6">
 						<v-btn
 							block
@@ -37,7 +45,9 @@
 				</v-row>
 			</v-card>
 
+			<!-- Card para seleção de ícone e cor -->
 			<v-card class="pa-5 d-flex flex-column align-center" elevation="1">
+				<!-- Ícone selecionado com cor -->
 				<v-avatar
 					size="72"
 					class="mb-3"
@@ -47,6 +57,7 @@
 					<v-icon size="48" :color="categoria.cor_icone ? 'white' : 'black'">{{ categoria.icone }}</v-icon>
 				</v-avatar>
 				<v-btn variant="text" @click="iconDialog = true">Alterar Ícone</v-btn>
+				<!-- Seleção de cor do ícone -->
 				<v-color-picker
 					elevation="0"
 					hide-inputs
@@ -58,6 +69,7 @@
 		</v-container>
 	</v-main>
 
+	<!-- Rodapé com botão de salvar categoria -->
 	<v-footer class="d-flex justify-center pa-4">
 		<v-btn
 			type="submit"
@@ -66,14 +78,15 @@
 			class="mt-4"
 			size="large"
 			rounded="lg"
-			:disabled="loading"
+			:loading="loading"
 			@click="saveCategory"
 		>
-			<v-progress-circular v-if="loading" indeterminate color="white" size="20" />
-			<span v-else>{{ formMode === 'add' ? 'Cadastrar' : 'Editar' }} Categoria</span>
+			<!-- Indicador de carregamento enquanto salva -->
+			<span>{{ formMode === 'add' ? 'Cadastrar' : 'Editar' }} Categoria</span>
 		</v-btn>
 	</v-footer>
 
+	<!-- Diálogo para seleção de ícone -->
 	<v-dialog v-model="iconDialog" scrollable max-width="500">
 		<v-card max-height="50vh">
 			<v-card-title class="pa-3">Selecione um Ícone</v-card-title>
@@ -81,6 +94,7 @@
 			<v-card-text class="pa-3">
 				<v-container>
 					<v-row>
+						<!-- Lista de ícones disponíveis -->
 						<v-col v-for="icon in mdiIcons" :key="icon" cols="3" class="text-center">
 							<v-btn icon @click="selectIcon(icon)">
 								<v-icon>{{ icon }}</v-icon>
@@ -112,6 +126,7 @@ export default defineComponent({
 	name: "FormCategoria",
 	data() {
 		return {
+			// Objeto que armazena os dados da categoria
 			categoria: {
 				id: "",
 				nome: "",
@@ -119,9 +134,10 @@ export default defineComponent({
 				icone: "mdi-tag",
 				cor_icone: "#2196F3",
 			},
-			formMode: "add" as "edit" | "add",
-			loading: false,
-			iconDialog: false,
+			formMode: "add" as "edit" | "add", // Define se o formulário está no modo adicionar ou editar
+			loading: false, // Indica se a operação está carregando
+			iconDialog: false, // Controla a exibição do diálogo de seleção de ícone
+			// Lista de ícones disponíveis para seleção
 			mdiIcons: [
 				"mdi-home",
 				"mdi-account",
@@ -174,6 +190,7 @@ export default defineComponent({
 		};
 	},
 	methods: {
+		// Obtém os dados da categoria caso esteja em modo edição
 		async getData(categoriaId: string) {
 			try {
 				this.categoria = await getCategoriaById(categoriaId);
@@ -182,6 +199,7 @@ export default defineComponent({
 				console.error("Erro ao obter a categoria:", error);
 			}
 		},
+		// Salva ou edita uma categoria
 		async saveCategory() {
 			this.loading = true;
 			try {
@@ -204,18 +222,20 @@ export default defineComponent({
 						this.categoria.cor_icone
 					);
 				}
-				this.$router.go(-1);
+				this.$router.go(-1); // Retorna para a página anterior após salvar
 			} catch (error) {
 				console.error("Erro ao salvar categoria:", error);
 			} finally {
 				this.loading = false;
 			}
 		},
+		// Seleciona um ícone e fecha o diálogo
 		selectIcon(icon: string) {
 			this.categoria.icone = icon;
 			this.iconDialog = false;
 		},
 	},
+	// Carrega os dados da categoria ao criar o componente
 	created() {
 		const categoriaId = this.$route.query.id;
 		if (categoriaId) {
