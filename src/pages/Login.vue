@@ -1,6 +1,6 @@
 <template>
 	<!-- Container principal que ocupa toda a altura da tela e centraliza o conteúdo -->
-	<v-container class="fill-height d-flex justify-center align-center">
+	<v-container class="fill-height d-flex justify-center align-center custom-gradient">
 		<!-- Cartão de login com fundo transparente e sem elevação -->
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<!-- Título do cartão com logo centralizado -->
@@ -121,5 +121,8 @@ export default defineComponent({
 .login-card {
 	width: 100%;
 	border-radius: 16px;
+}
+.custom-gradient {
+	background: linear-gradient(to bottom, #f7f5e3, #ffffff);
 }
 </style>

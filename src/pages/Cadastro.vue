@@ -1,6 +1,6 @@
 <template>
 	<!-- Container centralizado para o formulário de cadastro -->
-	<v-container class="fill-height d-flex justify-center align-center">
+	<v-container class="fill-height d-flex justify-center align-center custom-gradient">
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<v-card-title class="text-center mb-10">
 				<!-- Componente de logo -->
@@ -121,5 +121,8 @@ export default defineComponent({
 .login-card {
 	width: 100%;
 	border-radius: 16px;
+}
+.custom-gradient {
+	background: linear-gradient(to bottom, #f7f5e3, #ffffff);
 }
 </style>

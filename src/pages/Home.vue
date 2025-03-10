@@ -1,6 +1,6 @@
 <template>
 	<!-- Container principal da aplicação -->
-	<v-main class="bg-black">
+	<v-main>
 		<!-- Barra de aplicativo no topo -->
 		<v-app-bar>
 			<!-- Botão para abrir/fechar o menu lateral -->
@@ -9,7 +9,7 @@
 			</v-btn>
 
 			<!-- Avatar do usuário com a inicial do nome -->
-			<v-avatar color="primary" class="ml-2">{{ getName().split(" ")[0] }}</v-avatar>
+			<v-avatar color="primary" class="ml-2">{{ getName().split("")[0] }}</v-avatar>
 
 			<!-- Saudação com o nome do usuário -->
 			<v-toolbar-title>Olá, {{ getName() }}</v-toolbar-title>
