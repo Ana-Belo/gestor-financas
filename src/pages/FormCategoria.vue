@@ -9,8 +9,6 @@
 				</v-btn>
 				<!-- Define o título da página dinamicamente -->
 				<v-toolbar-title>{{ formMode === 'add' ? 'Nova' : 'Editar' }} Categoria</v-toolbar-title>
-				<v-spacer></v-spacer>
-				<!-- Espaço para alinhar os itens corretamente -->
 			</v-app-bar>
 
 			<!-- Card para o formulário de categoria -->

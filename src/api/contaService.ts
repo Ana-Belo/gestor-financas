@@ -16,6 +16,22 @@ export async function getContas(usuarioId: string) {
     return data; // Retorna os dados das contas do usuário
 }
 
+// Função para buscar uma conta específica pelo ID
+export async function getContaById(contaId: string) {
+    const { data, error } = await supabase
+        .from('contas') // Acessa a tabela 'contas'
+        .select('*') // Seleciona todas as colunas
+        .eq('id', contaId) // Filtra pelo ID da conta
+        .single(); // Retorna um único resultado
+
+    if (error) {
+        console.error('Erro ao buscar conta:', error.message);
+        throw error;
+    }
+
+    return data;
+}
+
 // Função para adicionar uma nova conta
 export async function addConta(usuarioId: string, nome: string, tipo: string, saldoInicial: number) {
     const id = uuidv4(); // Gera um identificador único para a conta
