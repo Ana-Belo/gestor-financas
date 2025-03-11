@@ -12,8 +12,6 @@
 				<!-- Título da página -->
 				<v-toolbar-title>Categorias</v-toolbar-title>
 
-				<v-spacer></v-spacer>
-
 				<!-- Botão para adicionar nova categoria -->
 				<v-btn
 					icon
