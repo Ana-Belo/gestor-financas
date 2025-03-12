@@ -8,8 +8,6 @@ export { }
 declare module 'vue' {
   export interface GlobalComponents {
     Alerta: typeof import('./components/Alerta.vue')['default']
-    AppFooter: typeof import('./components/AppFooter.vue')['default']
-    FormField: typeof import('./components/FormField.vue')['default']
     Logo: typeof import('./components/Logo.vue')['default']
     Paginacao: typeof import('./components/Paginacao.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
