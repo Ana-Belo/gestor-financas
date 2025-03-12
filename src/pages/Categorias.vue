@@ -1,7 +1,7 @@
 <template>
 	<!-- Componente principal -->
 	<v-main>
-		<v-container>
+		<v-container height="85vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<!-- Botão para voltar à página anterior -->
@@ -25,82 +25,83 @@
 			</v-app-bar>
 
 			<!-- Campo de pesquisa -->
-			<FormField v-model="search" label="Pesquisar categorias" prependIcon="mdi-magnify" class="mb-3" />
+			<TextForm v-model="search" label="Pesquisar categorias" prependIcon="mdi-magnify" class="mb-3" />
 
 			<!-- Lista de categorias com paginação -->
-			<v-row v-for="(category, index) in paginatedCategories" :key="index">
-				<!-- Ícone da categoria -->
-				<v-col cols="auto">
-					<v-avatar size="30" :color="category.cor_icone">
-						<v-icon size="18">{{ category.icone }}</v-icon>
-					</v-avatar>
-				</v-col>
+			<v-table density="comfortable">
+				<thead>
+					<tr>
+						<th class="text-center">Ícone</th>
+						<th class="text-center">Descrição</th>
+						<th class="text-center">Tipo</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(categoria, index) in paginatedCategorias" :key="index">
+						<td class="text-center">
+							<!-- Ícone da categoria -->
+							<v-avatar size="30" :color="categoria.cor_icone">
+								<v-icon size="18">{{ categoria.icone }}</v-icon>
+							</v-avatar>
+						</td>
+						<!-- Nome da categoria -->
+						<td class="text-center">{{ categoria.nome }}</td>
+						<td class="text-center">
+							<!-- Tipo da categoria (Despesa ou Receita) -->
+							<v-chip :color="categoria.tipo === 'Despesa' ? 'error' : 'success'">{{ categoria.tipo }}</v-chip>
+						</td>
+						<!-- Botões de ação (Editar e Excluir) -->
+						<td class="text-center">
+							<!-- Botão de edição -->
+							<v-btn
+								icon
+								flat
+								density="compact"
+								@click="$router.push({ path: '/formcategoria', query: { id: categoria.id } })"
+								color="transparent"
+							>
+								<v-icon size="18" color="grey">mdi-pencil</v-icon>
+							</v-btn>
 
-				<!-- Nome da categoria -->
-				<v-col>{{ category.nome }}</v-col>
-
-				<!-- Tipo da categoria (Despesa ou Receita) -->
-				<v-col class="text-center">
-					<v-chip :color="category.tipo === 'Despesa' ? 'error' : 'success'">{{ category.tipo }}</v-chip>
-				</v-col>
-
-				<!-- Botões de ação (Editar e Excluir) -->
-				<v-col cols="auto">
-					<!-- Botão de edição -->
-					<v-btn
-						icon
-						flat
-						density="compact"
-						@click="$router.push({ path: '/formcategoria', query: { id: category.id } })"
-						color="transparent"
-					>
-						<v-icon size="18" color="grey">mdi-pencil</v-icon>
-					</v-btn>
-
-					<!-- Botão de exclusão com confirmação -->
-					<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(category.id)">
-						<v-icon size="18" color="grey">mdi-delete</v-icon>
-					</v-btn>
-				</v-col>
-			</v-row>
+							<!-- Botão de exclusão com confirmação -->
+							<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(categoria.id)">
+								<v-icon size="18" color="grey">mdi-delete</v-icon>
+							</v-btn>
+						</td>
+					</tr>
+				</tbody>
+			</v-table>
 		</v-container>
+
+		<!-- Footer de paginação -->
+		<Paginacao
+			:currentPage="currentPage"
+			:totalPages="totalPages"
+			@prevPage="prevPage"
+			@nextPage="nextPage"
+		/>
+
+		<!-- Diálogo de confirmação para deletar -->
+		<v-dialog v-model="dialogDelete" width="auto">
+			<v-card>
+				<!-- Título do diálogo -->
+				<v-card-title class="headline">Excluir Categoria</v-card-title>
+
+				<!-- Mensagem de confirmação -->
+				<v-card-text>Tem certeza de que deseja excluir esta categoria?</v-card-text>
+
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<!-- Botão para cancelar -->
+					<v-btn color="grey" text @click="dialogDelete = false">Cancelar</v-btn>
+
+					<!-- Botão para confirmar exclusão -->
+					<v-btn color="red" @click="deleteCategoria">Excluir</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-main>
-
-	<!-- Footer de paginação -->
-	<v-footer class="d-flex justify-center pa-4">
-		<!-- Botão para página anterior -->
-		<v-btn icon @click="prevPage" :disabled="currentPage === 1" density="compact">
-			<v-icon>mdi-chevron-left</v-icon>
-		</v-btn>
-
-		<!-- Indicação da página atual -->
-		<small class="mx-3">Página {{ currentPage }} de {{ totalPages }}</small>
-
-		<!-- Botão para próxima página -->
-		<v-btn icon @click="nextPage" :disabled="currentPage === totalPages" density="compact">
-			<v-icon>mdi-chevron-right</v-icon>
-		</v-btn>
-	</v-footer>
-
-	<!-- Diálogo de confirmação para deletar -->
-	<v-dialog v-model="dialogDelete" width="auto">
-		<v-card>
-			<!-- Título do diálogo -->
-			<v-card-title class="headline">Excluir Categoria</v-card-title>
-
-			<!-- Mensagem de confirmação -->
-			<v-card-text>Tem certeza de que deseja excluir esta categoria?</v-card-text>
-
-			<v-card-actions>
-				<v-spacer></v-spacer>
-				<!-- Botão para cancelar -->
-				<v-btn color="grey" text @click="dialogDelete = false">Cancelar</v-btn>
-
-				<!-- Botão para confirmar exclusão -->
-				<v-btn color="red" @click="deleteCategoria">Excluir</v-btn>
-			</v-card-actions>
-		</v-card>
-	</v-dialog>
 </template>
 
 <script lang="ts">
@@ -113,24 +114,24 @@ export default defineComponent({
 	data() {
 		return {
 			search: "", // Texto de busca para filtrar categorias
-			categories: [], // Lista de categorias obtidas da API
+			categorias: [], // Lista de categorias obtidas da API
 			currentPage: 1, // Página atual da paginação
 			itemsPerPage: 10, // Quantidade de itens por página
 			dialogDelete: false, // Controle de exibição do diálogo de confirmação de exclusão
-			categoryToDelete: null, // Categoria que será deletada
+			categoriaToDelete: null, // Categoria que será deletada
 		};
 	},
 	computed: {
 		// Filtra categorias com base no termo de busca digitado pelo usuário
-		filteredCategories() {
-			return this.categories.filter((category) =>
-				category.nome.toLowerCase().includes(this.search.toLowerCase())
+		filteredCategorias() {
+			return this.categorias.filter((categoria) =>
+				categoria.nome.toLowerCase().includes(this.search.toLowerCase())
 			);
 		},
 		// Retorna um subconjunto das categorias filtradas, de acordo com a paginação
-		paginatedCategories() {
+		paginatedCategorias() {
 			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-			return this.filteredCategories.slice(
+			return this.filteredCategorias.slice(
 				startIndex,
 				startIndex + this.itemsPerPage
 			);
@@ -138,7 +139,7 @@ export default defineComponent({
 		// Calcula o número total de páginas com base na quantidade de itens filtrados
 		totalPages() {
 			return Math.ceil(
-				this.filteredCategories.length / this.itemsPerPage
+				this.filteredCategorias.length / this.itemsPerPage
 			);
 		},
 	},
@@ -147,7 +148,7 @@ export default defineComponent({
 		async fetchCategorias() {
 			const user = await getUser();
 			const usuarioId = user?.id || ""; // Obtém o ID do usuário autenticado
-			this.categories = await getCategorias(usuarioId); // Busca as categorias associadas ao usuário
+			this.categorias = await getCategorias(usuarioId); // Busca as categorias associadas ao usuário
 		},
 		// Avança para a próxima página se não for a última
 		nextPage() {
@@ -163,13 +164,13 @@ export default defineComponent({
 		},
 		// Exibe o diálogo de confirmação antes de excluir uma categoria
 		confirmDelete(categoriaId: string) {
-			this.categoryToDelete = categoriaId;
+			this.categoriaToDelete = categoriaId;
 			this.dialogDelete = true;
 		},
 		// Exclui a categoria selecionada e recarrega a lista de categorias
 		async deleteCategoria() {
-			if (this.categoryToDelete) {
-				await deleteCategoria(this.categoryToDelete); // Chama a API para excluir a categoria
+			if (this.categoriaToDelete) {
+				await deleteCategoria(this.categoriaToDelete); // Chama a API para excluir a categoria
 				this.dialogDelete = false; // Fecha o diálogo de confirmação
 				this.fetchCategorias(); // Atualiza a lista de categorias
 			}

@@ -11,13 +11,13 @@
 				<!-- Formulário de cadastro -->
 				<v-form @submit.prevent="handleRegister">
 					<!-- Campos do formulário -->
-					<FormField v-model="fullName" label="Nome completo" prependIcon="mdi-account-outline" />
+					<TextForm v-model="fullName" label="Nome completo" prependIcon="mdi-account-outline" />
 
-					<FormField v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
+					<TextForm v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
 
-					<FormField v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
+					<TextForm v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
 
-					<FormField
+					<TextForm
 						v-model="passwordConfirm"
 						label="Confirme a senha"
 						prependIcon="mdi-lock-outline"

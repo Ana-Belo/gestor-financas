@@ -1,6 +1,6 @@
 <template>
 	<!-- Container principal da aplicação -->
-	<v-main>
+	<v-main class="bg-grey-lighten-4">
 		<!-- Barra de aplicativo no topo -->
 		<v-app-bar>
 			<!-- Botão para abrir/fechar o menu lateral -->
@@ -13,8 +13,6 @@
 
 			<!-- Saudação com o nome do usuário -->
 			<v-toolbar-title>Olá, {{ getName() }}</v-toolbar-title>
-
-			<v-spacer></v-spacer>
 
 			<!-- Ícone de notificações -->
 			<v-btn icon>
@@ -38,7 +36,7 @@
 
 		<v-container>
 			<!-- Card de saldo total -->
-			<v-card class="home-card pa-1 mb-4" rounded="lg" flat elevation="1">
+			<v-card class="home-card pa-1 mb-4" rounded="lg" elevation="1">
 				<v-card-text>
 					<div class="text-start mb-4">
 						<div class="text-subtitle-1">Saldo Total</div>
@@ -48,15 +46,37 @@
 					<v-row justify="center">
 						<!-- Botão para adicionar receita -->
 						<v-col cols="6">
-							<v-btn block color="green" flat rounded="lg">
+							<v-btn block color="green" rounded="lg">
 								<v-icon left class="mr-3">mdi-arrow-up</v-icon>Receita
 							</v-btn>
 						</v-col>
 						<!-- Botão para adicionar despesa -->
 						<v-col cols="6">
-							<v-btn block color="red" flat rounded="lg">
+							<v-btn block color="red" rounded="lg">
 								<v-icon left class="mr-3">mdi-arrow-down</v-icon>Despesa
 							</v-btn>
+						</v-col>
+					</v-row>
+				</v-card-text>
+			</v-card>
+
+			<!-- Seção de transações recentes -->
+			<div class="d-flex justify-space-between align-center mb-1">
+				<div class="text-subtitle-1 font-weight-bold">Minhas Contas</div>
+				<div class="text-caption font-weight-bold mr-2">Saldo atual</div>
+			</div>
+
+			<!-- Lista de saldo de contas -->
+			<v-card class="home-card mb-2" rounded="lg" elevation="1">
+				<v-card-text>
+					<v-row v-for="(conta, index) in contas" :key="index" no-gutters align="center">
+						<v-col cols="6">
+							<div class="text-subtitle-1">{{ conta.title }}</div>
+						</v-col>
+						<v-spacer></v-spacer>
+						<v-col cols="4" class="text-end font-weight-bold">
+							<!-- Aplica a classe dinamicamente -->
+							<div :class="getTextColor(conta.amount)">{{ formatCurrency(conta.amount) }}</div>
 						</v-col>
 					</v-row>
 				</v-card-text>
@@ -65,7 +85,7 @@
 			<v-row class="mb-2 fill-height">
 				<!-- Card de despesas pendentes -->
 				<v-col cols="6" class="d-flex flex-column">
-					<v-card class="home-card pa-3" rounded="lg" flat elevation="1" style="flex: 1;">
+					<v-card class="home-card pa-3" rounded="lg" elevation="1" style="flex: 1;">
 						<div class="text-subtitle-2">
 							<v-icon left class="mr-3" color="red">mdi-arrow-bottom-right</v-icon>Despesas Pendentes
 						</div>
@@ -74,7 +94,7 @@
 				</v-col>
 				<!-- Card de receitas pendentes -->
 				<v-col cols="6" class="d-flex flex-column">
-					<v-card class="home-card pa-3" rounded="lg" flat elevation="1" style="flex: 1;">
+					<v-card class="home-card pa-3" rounded="lg" elevation="1" style="flex: 1;">
 						<div class="text-subtitle-2">
 							<v-icon left class="mr-3" color="green">mdi-arrow-top-right</v-icon>Receitas Pendentes
 						</div>
@@ -84,33 +104,32 @@
 			</v-row>
 
 			<!-- Seção de transações recentes -->
-			<div class="d-flex justify-space-between align-center mb-5">
+			<div class="d-flex justify-space-between align-center mb-1">
 				<div class="text-subtitle-1 font-weight-bold">Transações Recentes</div>
-				<v-btn flat size="x-small" class="bg-transparent">Ver mais</v-btn>
+				<v-btn size="x-small" flat class="bg-transparent" @click="$router.push('/transacoes')">Ver mais</v-btn>
 			</div>
 
 			<!-- Lista de transações -->
 			<v-card
-				v-for="(transaction, index) in transactions"
+				v-for="(transacao, index) in transacoes"
 				:key="index"
 				class="home-card pa-1 mb-2"
 				rounded="lg"
-				flat
 				elevation="1"
 			>
 				<v-card-text>
 					<v-row no-gutters align="center">
 						<v-col cols="2">
-							<v-avatar size="40" :color="transaction.colorIcon">
-								<v-icon>{{ transaction.icon }}</v-icon>
+							<v-avatar size="40" :color="transacao.colorIcon">
+								<v-icon>{{ transacao.icon }}</v-icon>
 							</v-avatar>
 						</v-col>
 						<v-col cols="6">
-							<div class="text-subtitle-1">{{ transaction.title }}</div>
-							<div class="text-caption">{{ transaction.subtitle }}</div>
+							<div class="text-subtitle-1">{{ transacao.title }}</div>
+							<div class="text-caption">{{ transacao.subtitle }}</div>
 						</v-col>
 						<v-col cols="4" class="text-end font-weight-bold">
-							<div :class="transaction.color">{{ transaction.amount }}</div>
+							<div :class="transacao.color">{{ transacao.amount }}</div>
 						</v-col>
 					</v-row>
 				</v-card-text>
@@ -120,8 +139,8 @@
 		<!-- Navegação inferior -->
 		<v-bottom-navigation grow color="white" class="mt-4">
 			<v-btn>
-				<v-icon>mdi-home</v-icon>
-				<span>Início</span>
+				<v-icon>mdi-cash</v-icon>
+				<span>Extrato</span>
 			</v-btn>
 			<v-btn>
 				<v-icon>mdi-chart-bar</v-icon>
@@ -156,6 +175,7 @@ export default defineComponent({
 					to: "/categorias",
 				},
 				{ icon: "mdi-bank", title: "Contas", to: "/contas" },
+				{ icon: "mdi-cash", title: "Transações", to: "/transacoes" },
 				{
 					icon: "mdi-chart-line",
 					title: "Relatórios",
@@ -172,7 +192,7 @@ export default defineComponent({
 					action: "logout",
 				},
 			],
-			transactions: [
+			transacoes: [
 				{
 					icon: "mdi-cart",
 					colorIcon: "red",
@@ -198,6 +218,16 @@ export default defineComponent({
 					color: "text-red",
 				},
 			],
+			contas: [
+				{
+					title: "Itau",
+					amount: 84.99,
+				},
+				{
+					title: "Bradesco",
+					amount: -30.21,
+				},
+			],
 		};
 	},
 
@@ -213,6 +243,15 @@ export default defineComponent({
 		getName() {
 			const fullName = this.user?.user_metadata?.full_name || "";
 			return fullName.split(" ")[0];
+		},
+		getTextColor(amount: number) {
+			return amount < 0 ? "text-red" : "text-green";
+		},
+		formatCurrency(value: number) {
+			return new Intl.NumberFormat("pt-BR", {
+				style: "currency",
+				currency: "BRL",
+			}).format(value);
 		},
 	},
 	async created() {
