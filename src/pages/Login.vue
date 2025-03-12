@@ -12,10 +12,10 @@
 				<!-- Formulário de login -->
 				<v-form @submit.prevent="handleLogin">
 					<!-- Campo de entrada para e-mail -->
-					<FormField v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
+					<TextForm v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
 
 					<!-- Campo de entrada para senha com ícone de cadeado -->
-					<FormField v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
+					<TextForm v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
 
 					<!-- Linha contendo checkbox "Lembre de mim" e link para recuperação de senha -->
 					<v-row align="center" justify="space-between">

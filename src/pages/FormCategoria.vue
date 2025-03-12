@@ -1,6 +1,6 @@
 <template>
 	<v-main>
-		<v-container>
+		<v-container height="82vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -14,7 +14,7 @@
 			<!-- Card para o formulário de categoria -->
 			<v-card class="pa-5 mb-4 text-center">
 				<!-- Campo para inserir o nome da categoria -->
-				<FormField v-model="categoria.nome" label="Nome da Categoria" />
+				<TextForm v-model="categoria.nome" label="Nome da Categoria" />
 				<v-row justify="center">
 					<!-- Botão para selecionar categoria do tipo "Receita" -->
 					<v-col cols="6">
@@ -65,50 +65,50 @@
 				/>
 			</v-card>
 		</v-container>
+
+		<!-- Rodapé com botão de salvar categoria -->
+		<v-container class="d-flex justify-center pa-4">
+			<v-btn
+				type="submit"
+				block
+				color="primary"
+				class="mt-4"
+				size="large"
+				rounded="lg"
+				:loading="loading"
+				@click="saveCategoria"
+			>
+				<!-- Indicador de carregamento enquanto salva -->
+				<span>{{ formMode === 'add' ? 'Cadastrar' : 'Editar' }} Categoria</span>
+			</v-btn>
+		</v-container>
+
+		<!-- Diálogo para seleção de ícone -->
+		<v-dialog v-model="iconDialog" scrollable max-width="500">
+			<v-card max-height="50vh">
+				<v-card-title class="pa-3">Selecione um Ícone</v-card-title>
+				<v-divider></v-divider>
+				<v-card-text class="pa-3">
+					<v-container>
+						<v-row>
+							<!-- Lista de ícones disponíveis -->
+							<v-col v-for="icon in mdiIcons" :key="icon" cols="3" class="text-center">
+								<v-btn icon @click="selectIcon(icon)">
+									<v-icon>{{ icon }}</v-icon>
+								</v-btn>
+							</v-col>
+						</v-row>
+					</v-container>
+				</v-card-text>
+				<v-divider></v-divider>
+				<v-card-actions class="pa-3">
+					<v-spacer></v-spacer>
+					<v-btn color="red" text @click="iconDialog = false">Cancelar</v-btn>
+					<v-spacer></v-spacer>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-main>
-
-	<!-- Rodapé com botão de salvar categoria -->
-	<v-footer class="d-flex justify-center pa-4">
-		<v-btn
-			type="submit"
-			block
-			color="primary"
-			class="mt-4"
-			size="large"
-			rounded="lg"
-			:loading="loading"
-			@click="saveCategory"
-		>
-			<!-- Indicador de carregamento enquanto salva -->
-			<span>{{ formMode === 'add' ? 'Cadastrar' : 'Editar' }} Categoria</span>
-		</v-btn>
-	</v-footer>
-
-	<!-- Diálogo para seleção de ícone -->
-	<v-dialog v-model="iconDialog" scrollable max-width="500">
-		<v-card max-height="50vh">
-			<v-card-title class="pa-3">Selecione um Ícone</v-card-title>
-			<v-divider></v-divider>
-			<v-card-text class="pa-3">
-				<v-container>
-					<v-row>
-						<!-- Lista de ícones disponíveis -->
-						<v-col v-for="icon in mdiIcons" :key="icon" cols="3" class="text-center">
-							<v-btn icon @click="selectIcon(icon)">
-								<v-icon>{{ icon }}</v-icon>
-							</v-btn>
-						</v-col>
-					</v-row>
-				</v-container>
-			</v-card-text>
-			<v-divider></v-divider>
-			<v-card-actions class="pa-3">
-				<v-spacer></v-spacer>
-				<v-btn color="red" text @click="iconDialog = false">Cancelar</v-btn>
-				<v-spacer></v-spacer>
-			</v-card-actions>
-		</v-card>
-	</v-dialog>
 </template>
 
 <script lang="ts">
@@ -198,7 +198,7 @@ export default defineComponent({
 			}
 		},
 		// Salva ou edita uma categoria
-		async saveCategory() {
+		async saveCategoria() {
 			this.loading = true;
 			try {
 				if (this.formMode === "add") {

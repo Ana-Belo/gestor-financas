@@ -1,7 +1,7 @@
 <template>
 	<!-- Componente principal -->
 	<v-main>
-		<v-container>
+		<v-container height="85vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<!-- Botão para voltar à página anterior -->
@@ -25,75 +25,76 @@
 			</v-app-bar>
 
 			<!-- Campo de pesquisa -->
-			<FormField v-model="search" label="Pesquisar contas" prependIcon="mdi-magnify" class="mb-3" />
+			<TextForm v-model="search" label="Pesquisar contas" prependIcon="mdi-magnify" class="mb-3" />
 
 			<!-- Lista de contas com paginação -->
-			<v-row v-for="(conta, index) in paginatedContas" :key="index">
-				<!-- Nome da conta -->
-				<v-col>{{ conta.nome }}</v-col>
+			<v-table density="comfortable">
+				<thead>
+					<tr>
+						<th class="text-center">Descrição</th>
+						<th class="text-center">Tipo</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(conta, index) in paginatedContas" :key="index">
+						<!-- Nome da conta -->
+						<td class="text-center">{{ conta.nome }}</td>
+						<td class="text-center">
+							<!-- Tipo da conta (Carteira, Conta corrente ou Conta digital) -->
+							<v-chip>{{ conta.tipo }}</v-chip>
+						</td>
+						<!-- Botões de ação (Editar e Excluir) -->
+						<td class="text-center">
+							<!-- Botão de edição -->
+							<v-btn
+								icon
+								flat
+								density="compact"
+								@click="$router.push({ path: '/formconta', query: { id: conta.id } })"
+								color="transparent"
+							>
+								<v-icon size="18" color="grey">mdi-pencil</v-icon>
+							</v-btn>
 
-				<!-- Tipo da conta (Despesa ou Receita) -->
-				<v-col class="text-center">
-					<v-chip :color="conta.tipo === 'Despesa' ? 'error' : 'success'">{{ conta.tipo }}</v-chip>
-				</v-col>
-
-				<!-- Botões de ação (Editar e Excluir) -->
-				<v-col cols="auto">
-					<!-- Botão de edição -->
-					<v-btn
-						icon
-						flat
-						density="compact"
-						@click="$router.push({ path: '/formconta', query: { id: conta.id } })"
-						color="transparent"
-					>
-						<v-icon size="18" color="grey">mdi-pencil</v-icon>
-					</v-btn>
-
-					<!-- Botão de exclusão com confirmação -->
-					<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(conta.id)">
-						<v-icon size="18" color="grey">mdi-delete</v-icon>
-					</v-btn>
-				</v-col>
-			</v-row>
+							<!-- Botão de exclusão com confirmação -->
+							<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(conta.id)">
+								<v-icon size="18" color="grey">mdi-delete</v-icon>
+							</v-btn>
+						</td>
+					</tr>
+				</tbody>
+			</v-table>
 		</v-container>
+
+		<!-- Footer de paginação -->
+		<Paginacao
+			:currentPage="currentPage"
+			:totalPages="totalPages"
+			@prevPage="prevPage"
+			@nextPage="nextPage"
+		/>
+
+		<!-- Diálogo de confirmação para deletar -->
+		<v-dialog v-model="dialogDelete" width="auto">
+			<v-card>
+				<!-- Título do diálogo -->
+				<v-card-title class="headline">Excluir Conta</v-card-title>
+
+				<!-- Mensagem de confirmação -->
+				<v-card-text>Tem certeza de que deseja excluir esta conta?</v-card-text>
+
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<!-- Botão para cancelar -->
+					<v-btn color="grey" text @click="dialogDelete = false">Cancelar</v-btn>
+
+					<!-- Botão para confirmar exclusão -->
+					<v-btn color="red" @click="deleteConta">Excluir</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-main>
-
-	<!-- Footer de paginação -->
-	<v-footer class="d-flex justify-center pa-4">
-		<!-- Botão para página anterior -->
-		<v-btn icon @click="prevPage" :disabled="currentPage === 1" density="compact">
-			<v-icon>mdi-chevron-left</v-icon>
-		</v-btn>
-
-		<!-- Indicação da página atual -->
-		<small class="mx-3">Página {{ currentPage }} de {{ totalPages }}</small>
-
-		<!-- Botão para próxima página -->
-		<v-btn icon @click="nextPage" :disabled="currentPage === totalPages" density="compact">
-			<v-icon>mdi-chevron-right</v-icon>
-		</v-btn>
-	</v-footer>
-
-	<!-- Diálogo de confirmação para deletar -->
-	<v-dialog v-model="dialogDelete" width="auto">
-		<v-card>
-			<!-- Título do diálogo -->
-			<v-card-title class="headline">Excluir Conta</v-card-title>
-
-			<!-- Mensagem de confirmação -->
-			<v-card-text>Tem certeza de que deseja excluir esta conta?</v-card-text>
-
-			<v-card-actions>
-				<v-spacer></v-spacer>
-				<!-- Botão para cancelar -->
-				<v-btn color="grey" text @click="dialogDelete = false">Cancelar</v-btn>
-
-				<!-- Botão para confirmar exclusão -->
-				<v-btn color="red" @click="deleteConta">Excluir</v-btn>
-			</v-card-actions>
-		</v-card>
-	</v-dialog>
 </template>
 
 <script lang="ts">

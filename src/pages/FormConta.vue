@@ -1,6 +1,6 @@
 <template>
 	<v-main>
-		<v-container>
+		<v-container height="82vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -14,41 +14,33 @@
 			<!-- Card para o formulário de conta -->
 			<v-card class="pa-5 mb-4 text-center">
 				<!-- Campo para inserir o nome da conta -->
-				<FormField v-model="conta.nome" label="Nome da Conta" class="mb-4" />
+				<TextForm v-model="conta.nome" label="Nome da Conta" class="mb-4" />
 
 				<!-- Campo para selecionar tipo da conta -->
-				<v-select
-					v-model="conta.tipo"
-					:items="tiposConta"
-					label="Selecione o tipo de conta"
-					variant="outlined"
-					rounded="lg"
-					density="comfortable"
-					class="mb-4"
-				></v-select>
+				<SelectForm v-model="conta.tipo" :items="tiposConta" label="Selecione o tipo de conta" />
 
 				<!-- Campo para inserir o saldo inicial da conta -->
-				<FormField v-model="conta.saldo_inicial" label="Saldo inicial" />
+				<TextForm v-model="conta.saldo_inicial" label="Saldo inicial" mask="currency" />
 			</v-card>
 		</v-container>
-	</v-main>
 
-	<!-- Rodapé com botão de salvar conta -->
-	<v-footer class="d-flex justify-center pa-4">
-		<v-btn
-			type="submit"
-			block
-			color="primary"
-			class="mt-4"
-			size="large"
-			rounded="lg"
-			:loading="loading"
-			@click="saveConta"
-		>
-			<!-- Indicador de carregamento enquanto salva -->
-			<span>{{ formMode === 'add' ? 'Cadastrar' : 'Editar' }} Conta</span>
-		</v-btn>
-	</v-footer>
+		<!-- Rodapé com botão de salvar conta -->
+		<v-container class="d-flex justify-center pa-4">
+			<v-btn
+				type="submit"
+				block
+				color="primary"
+				class="mt-4"
+				size="large"
+				rounded="lg"
+				:loading="loading"
+				@click="saveConta"
+			>
+				<!-- Indicador de carregamento enquanto salva -->
+				<span>{{ formMode === 'add' ? 'Cadastrar' : 'Editar' }} Conta</span>
+			</v-btn>
+		</v-container>
+	</v-main>
 </template>
 
 <script lang="ts">
