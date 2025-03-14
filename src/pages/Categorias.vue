@@ -37,7 +37,7 @@
 						<th></th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody v-if="paginatedCategorias.length">
 					<tr v-for="(categoria, index) in paginatedCategorias" :key="index">
 						<td class="text-center">
 							<!-- Ícone da categoria -->
@@ -69,6 +69,11 @@
 								<v-icon size="18" color="grey">mdi-delete</v-icon>
 							</v-btn>
 						</td>
+					</tr>
+				</tbody>
+				<tbody v-else>
+					<tr>
+						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
 					</tr>
 				</tbody>
 			</v-table>

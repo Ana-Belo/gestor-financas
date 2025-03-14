@@ -69,6 +69,7 @@ export default defineComponent({
 		async getData(contaId: string) {
 			try {
 				this.conta = await getContaById(contaId);
+				this.conta.saldo_inicial = this.conta.saldo_inicial * 100;
 				this.formMode = "edit";
 			} catch (error) {
 				console.error("Erro ao obter a conta:", error);
@@ -78,6 +79,7 @@ export default defineComponent({
 		async saveConta() {
 			this.loading = true;
 			try {
+				this.conta.saldo_inicial = this.conta.saldo_inicial / 100;
 				if (this.formMode === "add") {
 					const user = await getUser();
 					const usuarioId = user?.id || "";

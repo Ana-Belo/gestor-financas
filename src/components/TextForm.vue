@@ -118,7 +118,7 @@ export default defineComponent({
 		},
 		// Converte um valor monetário formatado de volta para número
 		parseCurrency(value: string) {
-			return Number(value.replace(/\D/g, "")) / 100;
+			return Number(value.replace(/\D/g, ""));
 		},
 		// Manipula a entrada do usuário para atualizar corretamente o valor formatado
 		handleInput(event: Event) {

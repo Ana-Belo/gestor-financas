@@ -20,7 +20,7 @@
 					<!-- Linha contendo checkbox "Lembre de mim" e link para recuperação de senha -->
 					<v-row align="center" justify="space-between">
 						<v-checkbox label="Lembre de mim" hide-details></v-checkbox>
-						<a href="#" class="text-primary text-decoration-none">Esqueceu a senha?</a>
+						<a href="#" class="text-black text-decoration-none">Esqueceu a senha?</a>
 					</v-row>
 
 					<!-- Botão de login, desabilitado enquanto a requisição está em andamento -->
@@ -38,16 +38,10 @@
 					</v-btn>
 
 					<!-- Exibe mensagem de erro caso o login falhe -->
-					<v-alert
-						v-if="errorMessage"
-						type="error"
-						class="my-5"
-						variant="outlined"
-						rounded="lg"
-					>{{ errorMessage }}</v-alert>
+					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
 
 					<!-- Divisor visual entre seções -->
-					<v-divider class="my-5"></v-divider>
+					<v-divider class="my-5" />
 
 					<!-- Texto indicando opções alternativas de login -->
 					<p class="text-center text-grey-darken-1">Ou continue com</p>
@@ -72,7 +66,7 @@
 						<v-btn
 							variant="text"
 							:to="'/cadastro'"
-							class="text-primary font-weight-bold text-decoration-none"
+							class="font-weight-bold text-decoration-none"
 						>Cadastre-se</v-btn>
 					</p>
 				</v-form>
@@ -89,10 +83,11 @@ export default defineComponent({
 	name: "Login",
 	data() {
 		return {
-			showPassword: false, // Define se a senha deve ser exibida ou oculta
+			showAlert: false, // Controla a exibição do alerta
+			alertType: "success", // Tipo do alerta (sucesso ou erro)
+			alertMessage: "", // Mensagem do alerta
 			email: "", // Armazena o e-mail digitado pelo usuário
 			password: "", // Armazena a senha digitada pelo usuário
-			errorMessage: "", // Armazena mensagens de erro em caso de falha no login
 			loading: false, // Indica se a requisição de login está em andamento
 		};
 	},
@@ -100,15 +95,16 @@ export default defineComponent({
 		// Método responsável por realizar o login
 		async handleLogin() {
 			this.loading = true; // Ativa o estado de carregamento
-			this.errorMessage = ""; // Reseta a mensagem de erro
-
 			try {
 				// Chama a API de login passando e-mail e senha
 				await login(this.email, this.password);
 				this.$router.push("/home"); // Redireciona para a página inicial após login bem-sucedido
 			} catch (error) {
-				// Captura erros e exibe a mensagem correspondente
-				this.errorMessage = error.message;
+				console.error("Erro ao realizar login:", error);
+				this.alertType = "error";
+				this.alertMessage =
+					"Erro ao realizar login. Verifique suas credenciais e tente novamente.";
+				this.showAlert = true;
 			} finally {
 				this.loading = false; // Desativa o estado de carregamento
 			}
