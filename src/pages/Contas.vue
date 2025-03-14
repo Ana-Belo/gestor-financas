@@ -36,7 +36,7 @@
 						<th></th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody v-if="paginatedContas.length">
 					<tr v-for="(conta, index) in paginatedContas" :key="index">
 						<!-- Nome da conta -->
 						<td class="text-center">{{ conta.nome }}</td>
@@ -62,6 +62,11 @@
 								<v-icon size="18" color="grey">mdi-delete</v-icon>
 							</v-btn>
 						</td>
+					</tr>
+				</tbody>
+				<tbody v-else>
+					<tr>
+						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
 					</tr>
 				</tbody>
 			</v-table>
@@ -139,7 +144,6 @@ export default {
 			const user = await getUser();
 			const usuarioId = user?.id || ""; // Obtém o ID do usuário autenticado
 			this.contas = await getContas(usuarioId); // Busca as contas associadas ao usuário
-			console.log(this.contas);
 		},
 		// Avança para a próxima página se não for a última
 		nextPage() {

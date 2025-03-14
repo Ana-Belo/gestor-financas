@@ -40,7 +40,7 @@
 				<v-card-text>
 					<div class="text-start mb-4">
 						<div class="text-subtitle-1">Saldo Total</div>
-						<div class="text-h4 font-weight-bold">R$ 24.562,80</div>
+						<div class="text-h4 font-weight-bold">{{ formatCurrency(saldoTotal) }}</div>
 					</div>
 
 					<v-row justify="center">
@@ -71,12 +71,12 @@
 				<v-card-text>
 					<v-row v-for="(conta, index) in contas" :key="index" no-gutters align="center">
 						<v-col cols="6">
-							<div class="text-subtitle-1">{{ conta.title }}</div>
+							<div class="text-subtitle-1">{{ conta.nome }}</div>
 						</v-col>
 						<v-spacer></v-spacer>
 						<v-col cols="4" class="text-end font-weight-bold">
 							<!-- Aplica a classe dinamicamente -->
-							<div :class="getTextColor(conta.amount)">{{ formatCurrency(conta.amount) }}</div>
+							<div :class="getTextColor(conta.saldo)">{{ formatCurrency(conta.saldo) }}</div>
 						</v-col>
 					</v-row>
 				</v-card-text>
@@ -89,7 +89,7 @@
 						<div class="text-subtitle-2">
 							<v-icon left class="mr-3" color="red">mdi-arrow-bottom-right</v-icon>Despesas Pendentes
 						</div>
-						<div class="text-subtitle-1 text-red font-weight-bold">R$ 1.240,00</div>
+						<div class="text-subtitle-1 text-red font-weight-bold">{{ formatCurrency(despesasPendentes) }}</div>
 					</v-card>
 				</v-col>
 				<!-- Card de receitas pendentes -->
@@ -98,7 +98,9 @@
 						<div class="text-subtitle-2">
 							<v-icon left class="mr-3" color="green">mdi-arrow-top-right</v-icon>Receitas Pendentes
 						</div>
-						<div class="text-subtitle-1 text-green font-weight-bold">R$ 3.500,00</div>
+						<div
+							class="text-subtitle-1 text-green font-weight-bold"
+						>{{ formatCurrency(receitasPendentes) }}</div>
 					</v-card>
 				</v-col>
 			</v-row>
@@ -120,16 +122,18 @@
 				<v-card-text>
 					<v-row no-gutters align="center">
 						<v-col cols="2">
-							<v-avatar size="40" :color="transacao.colorIcon">
-								<v-icon>{{ transacao.icon }}</v-icon>
+							<v-avatar size="40" :color="transacao.categoria.cor_icone">
+								<v-icon>{{ transacao.categoria.icone }}</v-icon>
 							</v-avatar>
 						</v-col>
 						<v-col cols="6">
-							<div class="text-subtitle-1">{{ transacao.title }}</div>
-							<div class="text-caption">{{ transacao.subtitle }}</div>
+							<div class="text-subtitle-1">{{ transacao.categoria.nome }}</div>
+							<div class="text-caption">{{ transacao.descricao }}</div>
 						</v-col>
 						<v-col cols="4" class="text-end font-weight-bold">
-							<div :class="transacao.color">{{ transacao.amount }}</div>
+							<div
+								:class="transacao.tipo === 'Despesa' ? 'text-red': 'text-green'"
+							>{{ formatCurrency(transacao.valor) }}</div>
 						</v-col>
 					</v-row>
 				</v-card-text>
@@ -161,6 +165,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { logout, getUser } from "../api/authService";
+import {
+	getSaldoAtual,
+	getSaldoContas,
+	getSaldoDespesasPendentes,
+	getSaldoReceitasPendentes,
+	getUltimasTransacoes,
+} from "../api/homeService";
 
 export default defineComponent({
 	name: "Home",
@@ -168,6 +179,11 @@ export default defineComponent({
 		return {
 			drawer: false,
 			user: {},
+			saldoTotal: 0,
+			despesasPendentes: 0,
+			receitasPendentes: 0,
+			contas: [],
+			transacoes: [],
 			menuItems: [
 				{
 					icon: "mdi-view-list",
@@ -190,42 +206,6 @@ export default defineComponent({
 					icon: "mdi-logout",
 					title: "Sair",
 					action: "logout",
-				},
-			],
-			transacoes: [
-				{
-					icon: "mdi-cart",
-					colorIcon: "red",
-					title: "Compras",
-					subtitle: "Amazon.com",
-					amount: "R$ 84,99",
-					color: "text-red",
-				},
-				{
-					icon: "mdi-office-building",
-					colorIcon: "blue",
-					title: "Salário",
-					subtitle: "Empresa Inc",
-					amount: "R$ 4.250,00",
-					color: "text-green",
-				},
-				{
-					icon: "mdi-food-fork-drink",
-					colorIcon: "orange",
-					title: "Restaurante",
-					subtitle: "Burger King",
-					amount: "R$ 32,50",
-					color: "text-red",
-				},
-			],
-			contas: [
-				{
-					title: "Itau",
-					amount: 84.99,
-				},
-				{
-					title: "Bradesco",
-					amount: -30.21,
 				},
 			],
 		};
@@ -253,9 +233,21 @@ export default defineComponent({
 				currency: "BRL",
 			}).format(value);
 		},
+		async fetchSaldo() {
+			this.saldoTotal = await getSaldoAtual(this.user.id);
+			this.contas = await getSaldoContas(this.user.id);
+			this.transacoes = await getUltimasTransacoes(this.user.id);
+			this.despesasPendentes = await getSaldoDespesasPendentes(
+				this.user.id
+			);
+			this.receitasPendentes = await getSaldoReceitasPendentes(
+				this.user.id
+			);
+		},
 	},
 	async created() {
 		this.user = await getUser();
+		await this.fetchSaldo();
 	},
 });
 </script>
