@@ -18,7 +18,7 @@
 					class="bg-blue mr-4"
 					color="white"
 					density="compact"
-					@click="$router.push('/formconta')"
+					@click="$router.push('/formtransacao')"
 				>
 					<v-icon>mdi-plus</v-icon>
 				</v-btn>
@@ -38,7 +38,7 @@
 				<th></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody v-if="paginatedTransacoes.length">
 				<tr v-for="(transacao, index) in paginatedTransacoes" :key="index">
 				<!-- Descrição da transação -->
 				<td class="text-center">{{ transacao.descricao }}</td>
@@ -76,6 +76,11 @@
 				</td>
 				</tr>
 			</tbody>
+			<tbody v-else>
+					<tr>
+						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
+					</tr>
+				</tbody>
 			</v-table>
 		</v-container>
 
@@ -102,7 +107,7 @@
 					<v-btn color="grey" text @click="dialogDelete = false">Cancelar</v-btn>
 
 					<!-- Botão para confirmar exclusão -->
-					<v-btn color="red" @click="delete~Transacao">Excluir</v-btn>
+					<v-btn color="red" @click="deleteTransacoes">Excluir</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
@@ -171,7 +176,7 @@ export default {
 			this.dialogDelete = true;
 		},
 		// Exclui a transacao selecionada e recarrega a lista de transacoes
-		async deleteTrancacoes() {
+		async deleteTransacoes() {
 			if (this.transacaoToDelete) {
 				await deleteTransacao(this.transacaoToDelete); // Chama a API para excluir a transacao
 				this.dialogDelete = false; // Fecha o diálogo de confirmação
