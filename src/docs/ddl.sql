@@ -29,7 +29,7 @@ CREATE TABLE "categorias" (
   "data_atualizacao" timestamp
 );
 
-CREATE TYPE tipo_transacao AS ENUM ('receita', 'despesa');
+CREATE TYPE tipo_transacao AS ENUM ('Receita', 'Despesa');
 
 CREATE TABLE "transacoes" (
   "id" uuid PRIMARY KEY,
