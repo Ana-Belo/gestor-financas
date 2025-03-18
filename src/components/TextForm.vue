@@ -61,7 +61,7 @@ export default defineComponent({
 			type: String,
 			default: "text",
 			validator: (value: string) =>
-				["text", "password", "number"].includes(value),
+				["text", "password", "number", "date"].includes(value),
 		},
 		// Define se o campo é do tipo senha (exibe ícone para mostrar/ocultar)
 		isPassword: {

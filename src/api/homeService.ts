@@ -1,4 +1,5 @@
-import { supabase } from './supabase';
+import { supabase } from './supabase'; // Importa a instância do Supabase para conexão com o banco de dados
+import { v4 as uuidv4 } from 'uuid'; // Importa a biblioteca UUID para gerar identificadores únicos
 
 // Função para obter o saldo atual do usuário
 export async function getSaldoAtual(usuarioId: string) {
@@ -50,7 +51,7 @@ export async function getSaldoContas(usuarioId: string) {
         // Busca as contas do usuário
         const { data: contas, error: contasError } = await supabase
             .from('contas')
-            .select('id, nome, saldo_inicial')
+            .select('id, nome, tipo, saldo_inicial')
             .eq('usuario_id', usuarioId);
 
         if (contasError) {
@@ -88,6 +89,7 @@ export async function getSaldoContas(usuarioId: string) {
         // Retorna a lista de contas com saldo atualizado
         return contas.map(conta => ({
             nome: conta.nome,
+            tipo: conta.tipo,
             saldo: saldoContas[conta.id] || 0
         }));
     } catch (error) {
@@ -106,6 +108,7 @@ export async function getUltimasTransacoes(usuarioId: string) {
                 tipo,
                 valor,
                 descricao,
+                data,
                 categoria:categorias(nome, icone, cor_icone)
             `)  // Fazendo a relação com a tabela 'categorias' usando 'categoria' como alias
             .eq('usuario_id', usuarioId)
@@ -174,4 +177,30 @@ export async function getSaldoReceitasPendentes(usuarioId: string) {
         console.error('Erro ao calcular saldo de receitas pendentes:', error);
         throw error;
     }
+}
+
+// Função para adicionar uma nova transação
+export async function addTransacao(transacao: {
+    usuario_id: string;
+    conta_id: string;
+    categoria_id: string;
+    tipo: 'Receita' | 'Despesa';
+    valor: number;
+    descricao: string;
+    data: string;
+}) {
+    const id = uuidv4(); // Gera um identificador único para a transação
+    const dataCriacao = new Date(); // Define a data de criação como a data atual
+    const dataAtualizacao = new Date(); // Define a data de atualização como a data atual
+
+    const { data, error } = await supabase
+        .from('transacoes')
+        .insert([{ ...transacao, id, data_criacao: dataCriacao, data_atualizacao: dataAtualizacao }]);
+
+    if (error) {
+        console.error('Erro ao adicionar transação:', error.message);
+        throw error;
+    }
+
+    return data;
 }

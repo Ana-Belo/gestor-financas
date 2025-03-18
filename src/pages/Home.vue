@@ -46,13 +46,13 @@
 					<v-row justify="center">
 						<!-- Botão para adicionar receita -->
 						<v-col cols="6">
-							<v-btn block color="green" rounded="lg">
+							<v-btn block color="green" rounded="lg" @click="dialogReceita = true">
 								<v-icon left class="mr-3">mdi-arrow-up</v-icon>Receita
 							</v-btn>
 						</v-col>
 						<!-- Botão para adicionar despesa -->
 						<v-col cols="6">
-							<v-btn block color="red" rounded="lg">
+							<v-btn block color="red" rounded="lg" @click="dialogDespesa = true">
 								<v-icon left class="mr-3">mdi-arrow-down</v-icon>Despesa
 							</v-btn>
 						</v-col>
@@ -70,11 +70,14 @@
 			<v-card class="home-card mb-2" rounded="lg" elevation="1">
 				<v-card-text>
 					<v-row v-for="(conta, index) in contas" :key="index" no-gutters align="center">
+						<v-col cols="auto">
+							<v-icon size="18" class="mr-3">{{ iconesConta[conta.tipo] }}</v-icon>
+						</v-col>
 						<v-col cols="6">
 							<div class="text-subtitle-1">{{ conta.nome }}</div>
 						</v-col>
 						<v-spacer></v-spacer>
-						<v-col cols="4" class="text-end font-weight-bold">
+						<v-col cols="auto" class="text-end font-weight-bold">
 							<!-- Aplica a classe dinamicamente -->
 							<div :class="getTextColor(conta.saldo)">{{ formatCurrency(conta.saldo) }}</div>
 						</v-col>
@@ -119,7 +122,7 @@
 				rounded="lg"
 				elevation="1"
 			>
-				<v-card-text>
+				<v-card-text class="py-1">
 					<v-row no-gutters align="center">
 						<v-col cols="2">
 							<v-avatar size="40" :color="transacao.categoria.cor_icone">
@@ -130,10 +133,12 @@
 							<div class="text-subtitle-1">{{ transacao.categoria.nome }}</div>
 							<div class="text-caption">{{ transacao.descricao }}</div>
 						</v-col>
-						<v-col cols="4" class="text-end font-weight-bold">
+						<v-col cols="4" class="text-end">
 							<div
+								class="text-subtitle-2 font-weight-bold"
 								:class="transacao.tipo === 'Despesa' ? 'text-red': 'text-green'"
 							>{{ formatCurrency(transacao.valor) }}</div>
+							<div class="text-caption">{{formatarData(transacao.data)}}</div>
 						</v-col>
 					</v-row>
 				</v-card-text>
@@ -141,7 +146,7 @@
 		</v-container>
 
 		<!-- Navegação inferior -->
-		<v-bottom-navigation grow color="white" class="mt-4">
+		<v-bottom-navigation grow color="black" class="mt-4">
 			<v-btn>
 				<v-icon>mdi-cash</v-icon>
 				<span>Extrato</span>
@@ -159,6 +164,66 @@
 				<span>Perfil</span>
 			</v-btn>
 		</v-bottom-navigation>
+
+		<!-- Dialog para adicionar receita -->
+		<v-dialog v-model="dialogReceita">
+			<v-card>
+				<v-card-title>Adicionar Receita</v-card-title>
+				<v-card-text class="mb-n4">
+					<!-- Campo para inserir o valor -->
+					<TextForm v-model="novaReceita.valor" label="Valor" mask="currency" />
+
+					<!-- Campo para inserir a descrição -->
+					<TextForm v-model="novaReceita.descricao" label="Descrição" />
+
+					<!-- Campo para selecionar a conta -->
+					<SelectForm v-model="novaReceita.conta_id" :items="contasMap" label="Conta" />
+
+					<!-- Campo para selecionar a categoria -->
+					<SelectForm v-model="novaReceita.categoria_id" :items="categoriasReceita" label="Categoria" />
+
+					<!-- Campo para selecionar a data da transação -->
+					<TextForm v-model="novaReceita.data" label="Data da Transação" type="date" />
+
+					<!-- Campo para indicar se a receita está pendente -->
+					<v-switch v-model="novaReceita.pendente" label="Receita Pendente?" />
+				</v-card-text>
+				<v-card-actions class="pa-4">
+					<v-btn @click="dialogReceita = false">Cancelar</v-btn>
+					<v-btn color="green" @click="salvarReceita">Salvar</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
+		<!-- Dialog para adicionar despesa -->
+		<v-dialog v-model="dialogDespesa">
+			<v-card>
+				<v-card-title>Adicionar Despesa</v-card-title>
+				<v-card-text class="mb-n4">
+					<!-- Campo para inserir o valor -->
+					<TextForm v-model="novaDespesa.valor" label="Valor" mask="currency" />
+
+					<!-- Campo para inserir a descrição -->
+					<TextForm v-model="novaDespesa.descricao" label="Descrição" />
+
+					<!-- Campo para selecionar a conta -->
+					<SelectForm v-model="novaDespesa.conta_id" :items="contasMap" label="Conta" />
+
+					<!-- Campo para selecionar a categoria -->
+					<SelectForm v-model="novaDespesa.categoria_id" :items="categoriasDespesa" label="Categoria" />
+
+					<!-- Campo para selecionar a data da transação -->
+					<TextForm v-model="novaDespesa.data" label="Data da Transação" type="date" />
+
+					<!-- Campo para indicar se a despesa está pendente -->
+					<v-switch v-model="novaDespesa.pendente" label="Despesa Pendente?" />
+				</v-card-text>
+				<v-card-actions class="pa-4">
+					<v-btn @click="dialogDespesa = false">Cancelar</v-btn>
+					<v-btn color="red" @click="salvarDespesa">Salvar</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-main>
 </template>
 
@@ -171,7 +236,10 @@ import {
 	getSaldoDespesasPendentes,
 	getSaldoReceitasPendentes,
 	getUltimasTransacoes,
+	addTransacao,
 } from "../api/homeService";
+import { getCategorias } from "../api/categoriaService";
+import { getContas } from "../api/contaService";
 
 export default defineComponent({
 	name: "Home",
@@ -184,6 +252,29 @@ export default defineComponent({
 			receitasPendentes: 0,
 			contas: [],
 			transacoes: [],
+			contasOptions: [],
+			categoriasOptions: [],
+			dialogReceita: false,
+			dialogDespesa: false,
+			novaReceita: {
+				valor: "",
+				descricao: "",
+				conta_id: "",
+				categoria_id: "",
+				data: new Date().toISOString().split("T")[0],
+			},
+			novaDespesa: {
+				valor: "",
+				descricao: "",
+				conta_id: "",
+				categoria_id: "",
+				data: new Date().toISOString().split("T")[0],
+			},
+			iconesConta: {
+				Carteira: "mdi-wallet",
+				"Conta corrente": "mdi-bank",
+				"Conta digital": "mdi-laptop",
+			},
 			menuItems: [
 				{
 					icon: "mdi-view-list",
@@ -210,7 +301,24 @@ export default defineComponent({
 			],
 		};
 	},
-
+	computed: {
+		categoriasReceita() {
+			return this.categoriasOptions
+				.filter((c) => c.tipo === "Receita")
+				.map((c) => ({ value: c.id, title: c.nome }));
+		},
+		categoriasDespesa() {
+			return this.categoriasOptions
+				.filter((c) => c.tipo === "Despesa")
+				.map((c) => ({ value: c.id, title: c.nome }));
+		},
+		contasMap() {
+			return this.contasOptions.map((c) => ({
+				value: c.id,
+				title: c.nome,
+			}));
+		},
+	},
 	methods: {
 		async handleLogout() {
 			try {
@@ -219,6 +327,26 @@ export default defineComponent({
 			} catch (error) {
 				console.error("Erro ao fazer logout:", error);
 			}
+		},
+		async salvarReceita() {
+			await addTransacao({
+				...this.novaReceita,
+				valor: this.novaReceita.valor / 100,
+				usuario_id: this.user.id,
+				tipo: "Receita",
+			});
+			this.dialogReceita = false;
+			await this.fetchSaldos();
+		},
+		async salvarDespesa() {
+			await addTransacao({
+				...this.novaDespesa,
+				valor: this.novaDespesa.valor / 100,
+				usuario_id: this.user.id,
+				tipo: "Despesa",
+			});
+			this.dialogDespesa = false;
+			await this.fetchSaldos();
 		},
 		getName() {
 			const fullName = this.user?.user_metadata?.full_name || "";
@@ -233,7 +361,11 @@ export default defineComponent({
 				currency: "BRL",
 			}).format(value);
 		},
-		async fetchSaldo() {
+		formatarData(data) {
+			const [ano, mes, dia] = data.split("T")[0].split("-");
+			return `${dia}/${mes}/${ano}`;
+		},
+		async fetchSaldos() {
 			this.saldoTotal = await getSaldoAtual(this.user.id);
 			this.contas = await getSaldoContas(this.user.id);
 			this.transacoes = await getUltimasTransacoes(this.user.id);
@@ -244,10 +376,15 @@ export default defineComponent({
 				this.user.id
 			);
 		},
+		async fetchData() {
+			this.contasOptions = await getContas(this.user.id);
+			this.categoriasOptions = await getCategorias(this.user.id);
+		},
 	},
 	async created() {
 		this.user = await getUser();
-		await this.fetchSaldo();
+		await this.fetchSaldos();
+		await this.fetchData();
 	},
 });
 </script>

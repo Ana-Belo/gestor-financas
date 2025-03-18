@@ -6,7 +6,8 @@ export async function getContas(usuarioId: string) {
     const { data, error } = await supabase
         .from('contas') // Acessa a tabela 'contas'
         .select('*') // Seleciona todas as colunas
-        .eq('usuario_id', usuarioId); // Filtra pelo ID do usuário
+        .eq('usuario_id', usuarioId) // Filtra pelo ID do usuário
+        .order('nome', { ascending: true }); // Ordena pelo nome;
 
     if (error) {
         console.error('Erro ao buscar contas:', error.message); // Loga o erro caso ocorra

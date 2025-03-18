@@ -7,7 +7,8 @@ export async function getCategorias(usuarioId: string) {
         .from('categorias') // Acessa a tabela 'categorias'
         .select('*') // Seleciona todas as colunas
         // Busca categorias do usuário específico ou categorias sem um usuário associado
-        .or(`usuario_id.eq.${usuarioId},usuario_id.is.null`);
+        .or(`usuario_id.eq.${usuarioId},usuario_id.is.null`)
+        .order('nome', { ascending: true });  // Ordena pelo nome;
 
     if (error) {
         console.error('Erro ao buscar categorias:', error.message);

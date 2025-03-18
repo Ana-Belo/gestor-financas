@@ -46,21 +46,23 @@
 						</td>
 						<!-- Botões de ação (Editar e Excluir) -->
 						<td class="text-center">
-							<!-- Botão de edição -->
-							<v-btn
-								icon
-								flat
-								density="compact"
-								@click="$router.push({ path: '/formconta', query: { id: conta.id } })"
-								color="transparent"
-							>
-								<v-icon size="18" color="grey">mdi-pencil</v-icon>
-							</v-btn>
+							<div class="d-flex justify-center">
+								<!-- Botão de edição -->
+								<v-btn
+									icon
+									flat
+									density="compact"
+									@click="$router.push({ path: '/formconta', query: { id: conta.id } })"
+									color="transparent"
+								>
+									<v-icon size="18" color="grey">mdi-pencil</v-icon>
+								</v-btn>
 
-							<!-- Botão de exclusão com confirmação -->
-							<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(conta.id)">
-								<v-icon size="18" color="grey">mdi-delete</v-icon>
-							</v-btn>
+								<!-- Botão de exclusão com confirmação -->
+								<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(conta.id)">
+									<v-icon size="18" color="grey">mdi-delete</v-icon>
+								</v-btn>
+							</div>
 						</td>
 					</tr>
 				</tbody>
@@ -87,7 +89,11 @@
 				<v-card-title class="headline">Excluir Conta</v-card-title>
 
 				<!-- Mensagem de confirmação -->
-				<v-card-text>Tem certeza de que deseja excluir esta conta?</v-card-text>
+				<v-card-text>
+					Tem certeza de que deseja excluir esta conta?
+					<!-- Componente de alerta para exibir mensagens -->
+					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
+				</v-card-text>
 
 				<v-card-actions>
 					<v-spacer></v-spacer>
@@ -116,6 +122,9 @@ export default {
 			itemsPerPage: 10, // Quantidade de itens por página
 			dialogDelete: false, // Controle de exibição do diálogo de confirmação de exclusão
 			contaToDelete: null, // Conta que será deletada
+			showAlert: false, // Controla a exibição do alerta
+			alertType: "success", // Tipo do alerta (sucesso ou erro)
+			alertMessage: "", // Mensagem do alerta
 		};
 	},
 	computed: {
@@ -165,9 +174,25 @@ export default {
 		// Exclui a conta selecionada e recarrega a lista de contas
 		async deleteConta() {
 			if (this.contaToDelete) {
-				await deleteConta(this.contaToDelete); // Chama a API para excluir a conta
-				this.dialogDelete = false; // Fecha o diálogo de confirmação
-				this.fetchContas(); // Atualiza a lista de contas
+				try {
+					await deleteConta(this.contaToDelete); // Chama a API para excluir a conta
+					this.dialogDelete = false; // Fecha o diálogo de confirmação
+					this.fetchContas(); // Atualiza a lista de contas
+				} catch (error) {
+					if (error.code === "23503") {
+						// Verifica se o erro é relacionado à chave estrangeira
+						this.showAlert = true; // Exibe o alerta
+						this.alertType = "error"; // Tipo de alerta (pode ser 'error', 'success', etc.)
+						this.alertMessage =
+							"Não é possível excluir esta conta, pois ela ainda está associada a outros registros.";
+					} else {
+						// Trata outros erros de maneira genérica
+						this.showAlert = true; // Exibe o alerta
+						this.alertType = "error"; // Tipo de alerta
+						this.alertMessage =
+							"Ocorreu um erro ao tentar excluir a conta.";
+					}
+				}
 			}
 		},
 	},

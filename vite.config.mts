@@ -46,7 +46,7 @@ export default defineConfig({
     }),
     Fonts({
       google: {
-        families: [ {
+        families: [{
           name: 'Roboto',
           styles: 'wght@100;300;400;500;700;900',
         }],
@@ -69,7 +69,13 @@ export default defineConfig({
     ],
   },
   server: {
+    host: '0.0.0.0',
     port: 3000,
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      '192.168.100.6'
+    ],
   },
   css: {
     preprocessorOptions: {
