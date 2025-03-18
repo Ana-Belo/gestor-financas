@@ -32,11 +32,11 @@ export async function updateTransacao(transacaId: string, nome: string, tipo: st
 }
 
 // Função para excluir uma conta
-export async function deleteTransacao(transacaId: string) {
+export async function deleteTransacao(transacaoId: string) {
     const { data, error } = await supabase
         .from('transacoes') // Acessa a tabela 'contas'
         .delete() // Exclui a conta
-        .eq('id', transacaId); // Filtra pela conta específica a ser removida
+        .eq('id', transacaoId); // Filtra pela conta específica a ser removida
 
     if (error) {
         console.error('Erro ao deletar conta:', error.message); // Loga o erro caso ocorra
