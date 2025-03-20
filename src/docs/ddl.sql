@@ -40,7 +40,7 @@ CREATE TABLE "transacoes" (
   "valor" decimal,
   "descricao" text,
   "data" date,
-  "recorrente" boolean DEFAULT false,
+  "pendente" boolean DEFAULT false,
   "parcela_atual" integer,
   "total_parcelas" integer,
   "data_criacao" timestamp,

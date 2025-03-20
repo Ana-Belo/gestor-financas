@@ -102,3 +102,9 @@ export async function deleteTransacao(transacaoId: string) {
 
     return data; // Retorna os dados da transacao removida (caso necessário)
 }
+
+/*utilizar campos: "id" uuid PRIMARY KEY,
+  "usuario_id" uuid,
+  "categoria_id" uuid,
+  "valor_limite" decimal,
+  "mes_ano" varchar,*/
