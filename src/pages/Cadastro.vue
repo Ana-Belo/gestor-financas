@@ -4,7 +4,7 @@
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<v-card-title class="text-center mb-10">
 				<!-- Componente de logo -->
-				<Logo />
+				<CatLogo />
 			</v-card-title>
 
 			<v-card-text>
