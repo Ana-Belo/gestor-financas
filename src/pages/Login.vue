@@ -4,8 +4,8 @@
 		<!-- Cartão de login com fundo transparente e sem elevação -->
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<!-- Título do cartão com logo centralizado -->
-			<v-card-title class="text-center mb-15">
-				<Logo />
+			<v-card-title class="text-center mb-10">
+				<CatLogo />
 			</v-card-title>
 
 			<v-card-text>
