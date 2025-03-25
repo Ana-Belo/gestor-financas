@@ -283,6 +283,7 @@ export default defineComponent({
 				},
 				{ icon: "mdi-bank", title: "Contas", to: "/contas" },
 				{ icon: "mdi-cash", title: "Transações", to: "/transacoes" },
+				{ icon: "mdi-cash", title: "Orçamentos", to: "/orcamento" },
 				{
 					icon: "mdi-chart-line",
 					title: "Relatórios",
