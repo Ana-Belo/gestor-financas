@@ -119,6 +119,6 @@ export default defineComponent({
 	border-radius: 16px;
 }
 .custom-gradient {
-	background: linear-gradient(to bottom, #ffffff, #ffffff);
+	background: linear-gradient(to bottom, #7e94ba, #ffffff);
 }
 </style>
