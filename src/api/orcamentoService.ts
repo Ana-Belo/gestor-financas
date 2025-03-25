@@ -1,27 +1,27 @@
 import { supabase } from './supabase'; // Importa a instância do Supabase para conexão com o banco de dados
 import { v4 as uuidv4 } from 'uuid'; // Importa a biblioteca UUID para gerar identificadores únicos
 
-// Função para listar todas as transacoes de um usuário
-export async function getTransacao(usuarioId: string) {
+// Função para listar todas as orcamentos de um usuário
+export async function getOrcamento(usuarioId: string) {
     const { data, error } = await supabase
-        .from('transacoes') // Acessa a tabela 'transacoes'
+        .from('orcamentos') // Acessa a tabela 'orcamentos'
         .select('*') // Seleciona todas as colunas
         .eq('usuario_id', usuarioId); // Filtra pelo ID do usuário
 
     if (error) {
-        console.error('Erro ao buscar transacao:', error.message); // Loga o erro caso ocorra
+        console.error('Erro ao buscar orcamento:', error.message); // Loga o erro caso ocorra
         throw error; // Lança o erro para ser tratado externamente
     }
 
-    return data; // Retorna os dados das transacoes do usuário
+    return data; // Retorna os dados das orcamentos do usuário
 }
 
-// Função para buscar uma transacao específica pelo ID
-export async function getTransacaoById(transacaoId: string) {
+// Função para buscar uma orcamento específica pelo ID
+export async function getOrcamentoById(orcamentoId: string) {
     const { data, error } = await supabase
-        .from('transacoes') // Acessa a tabela 'transacoes'
+        .from('orcamentos') // Acessa a tabela 'orcamentos'
         .select('*') // Seleciona todas as colunas
-        .eq('id', transacaoId) // Filtra pelo ID da transacao
+        .eq('id', orcamentoId) // Filtra pelo ID da orcamento
         .single(); // Retorna um único resultado
 
     if (error) {
@@ -32,75 +32,67 @@ export async function getTransacaoById(transacaoId: string) {
     return data;
 }
 
-// Função para adicionar uma nova transacao
-export async function addTransacao(usuarioId: string, contaId: string, categoriaId: string, descricao: string, tipo: string, valor: number, dataTransacao: string, pendente: boolean ) {
-    const id = uuidv4(); // Gera um identificador único para a transacao
+// Função para adicionar uma nova orcamento
+export async function addOrcamento(usuarioId: string, categoriaId: string, valor_limite: number, mes_ano: string) {
+    const id = uuidv4(); // Gera um identificador único para a orcamento
     const dataCriacao = new Date(); // Define a data de criação como a data atual
     const dataAtualizacao = new Date(); // Define a data de atualização como a data atual
 
     const { data, error } = await supabase
-        .from('transacoes') // Acessa a tabela 'transacoes'
+        .from('orcamentos') // Acessa a tabela 'orcamentos'
         .insert([{ // Insere um novo registro
             id,
             usuario_id: usuarioId,
-            conta_id: contaId,
             categoria_id: categoriaId,
-            descricao,
-            tipo,
-            valor,
-            data: dataTransacao,
-            pendente,
+            valor_limite,
+            mes_ano,
             data_criacao: dataCriacao,
             data_atualizacao: dataAtualizacao
         }]);
 
     if (error) {
-        console.error('Erro ao adicionar transacao:', error.message); // Loga o erro caso ocorra
+        console.error('Erro ao adicionar orcamento:', error.message); // Loga o erro caso ocorra
         throw error; // Lança o erro para ser tratado externamente
     }
 
-    return data; // Retorna os dados da transacao inserida
+    return data; // Retorna os dados da orcamento inserida
 }
 
-// Função para atualizar os dados de uma transacao
-export async function updateTransacao(transacaoId: string, contaId: string, categoriaId: string, descricao: string, tipo: string, valor: number, dataTransacao: string, pendente: boolean) {
+// Função para atualizar os dados de uma orcamento
+export async function updateOrcamento(orcamentoId: string, categoriaId: string, valor_limite: number, mes_ano: string) {
     const dataAtualizacao = new Date(); // Define a nova data de atualização
 
     const { data, error } = await supabase
-        .from('transacoes') // Acessa a tabela 'transacoes'
-        .update({ // Atualiza os dados da transacao
-            conta_id: contaId,
+        .from('orcamentos') // Acessa a tabela 'orcamentos'
+        .update({ // Atualiza os dados da orcamento
             categoria_id: categoriaId,
-            descricao,
-            tipo,
-            valor,
-            data: dataTransacao,
-            pendente,
+            valor_limite,
+            mes_ano,
             data_atualizacao: dataAtualizacao
         })
-        .eq('id', transacaoId); // Filtra pela transacao específica a ser atualizada
+        .eq('id', orcamentoId); // Filtra pela orcamento específica a ser atualizada
 
     if (error) {
         console.error('Erro ao atualizar transação:', error.message); // Loga o erro caso ocorra
         throw error; // Lança o erro para ser tratado externamente
     }
 
-    return data; // Retorna os dados da transacao atualizada
+    return data; // Retorna os dados da orcamento atualizada
 }
 
-// Função para excluir uma transacao
-export async function deleteTransacao(transacaoId: string) {
+// Função para excluir uma orcamento
+export async function deleteOrcamento(orcamentoId: string) {
     const { data, error } = await supabase
-        .from('transacoes') // Acessa a tabela 'transacoes'
-        .delete() // Exclui a transacao
-        .eq('id', transacaoId); // Filtra pela transacao específica a ser removida
+        .from('orcamentos') // Acessa a tabela 'orcamentos'
+        .delete() // Exclui a orcamento
+        .eq('id', orcamentoId); // Filtra pela orcamento específica a ser removida
 
     if (error) {
-        console.error('Erro ao deletar transacao:', error.message); // Loga o erro caso ocorra
+        console.error('Erro ao deletar orcamento:', error.message); // Loga o erro caso ocorra
         throw error; // Lança o erro para ser tratado externamente
     }
 
-    return data; // Retorna os dados da transacao removida (caso necessário)
+    return data; // Retorna os dados da orcamento removida (caso necessário)
 }
 
 /*utilizar campos: "id" uuid PRIMARY KEY,
