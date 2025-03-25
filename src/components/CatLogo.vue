@@ -17,7 +17,7 @@
 				<div class="nose"></div>
 			</div>
 		</div>
-		<h2 class="margin-title">CatControl</h2>
+		<h2 class="margin-title text-grey-darken-2">CatControle</h2>
 		<p class="text-subtitle-2 text-grey-darken-1">Gerencie seu dinheiro aqui</p>
 	</div>
 </template>
@@ -79,10 +79,6 @@ export default {
 	opacity: 0;
 }
 
-#frame:hover::before {
-	opacity: 1;
-}
-
 #frame *,
 #frame *:before,
 #frame *:after {
@@ -96,10 +92,6 @@ export default {
 	transform: translate(-50%, -50%);
 	width: 100px;
 	height: 100px;
-}
-
-.cat:hover .center {
-	top: 60%;
 }
 
 .cat .head {
@@ -182,55 +174,6 @@ export default {
 	top: 15px;
 	left: 45px;
 	background: #fff;
-}
-
-.cat:hover .head {
-	top: 2.5px;
-	left: 50px;
-	width: 100px;
-	height: 75px;
-	background: black;
-	border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
-}
-
-.cat:hover .ear {
-	top: 15px;
-	left: 25px;
-	width: 50px;
-	height: 40px;
-	background: #555;
-	border-radius: 5px 30px;
-	box-shadow: 0 0 0 7px black;
-	transform: skew(25deg) rotate(30deg);
-}
-
-.cat:hover .ear.b {
-	border-radius: 30px 5px;
-	transform: skew(-25deg) rotate(-30deg);
-	left: 125px;
-}
-
-.cat:hover .body {
-	border-radius: 50% 50% 50% 50% / 20% 20% 80% 80%;
-	background: #131313;
-	top: 40px;
-	left: 75px;
-	width: 50px;
-	height: 65px;
-}
-
-.cat:hover .eye {
-	top: 30px;
-	left: 60px;
-	width: 35px;
-	height: 35px;
-	background: yellow;
-	border-radius: 9in;
-	animation: blink 5s infinite ease-in-out;
-}
-
-.cat:hover .eye.b {
-	left: 105px;
 }
 
 @keyframes blink {
