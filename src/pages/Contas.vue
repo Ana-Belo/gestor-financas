@@ -81,36 +81,13 @@
 			@prevPage="prevPage"
 			@nextPage="nextPage"
 		/>
-
-		<!-- Diálogo de confirmação para deletar -->
-		<v-dialog v-model="dialogDelete" width="auto">
-			<v-card>
-				<!-- Título do diálogo -->
-				<v-card-title class="headline">Excluir Conta</v-card-title>
-
-				<!-- Mensagem de confirmação -->
-				<v-card-text>
-					Tem certeza de que deseja excluir esta conta?
-					<!-- Componente de alerta para exibir mensagens -->
-					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
-				</v-card-text>
-
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<!-- Botão para cancelar -->
-					<v-btn color="grey" text @click="dialogDelete = false">Cancelar</v-btn>
-
-					<!-- Botão para confirmar exclusão -->
-					<v-btn color="red" @click="deleteConta">Excluir</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
 	</v-main>
 </template>
 
 <script lang="ts">
 import { getUser } from "../api/authService";
 import { getContas, deleteConta } from "../api/contaService";
+import Swal from "sweetalert2";
 
 export default {
 	name: "Contas",
@@ -120,11 +97,6 @@ export default {
 			contas: [], // Lista de contas obtidas da API
 			currentPage: 1, // Página atual da paginação
 			itemsPerPage: 10, // Quantidade de itens por página
-			dialogDelete: false, // Controle de exibição do diálogo de confirmação de exclusão
-			contaToDelete: null, // Conta que será deletada
-			showAlert: false, // Controla a exibição do alerta
-			alertType: "success", // Tipo do alerta (sucesso ou erro)
-			alertMessage: "", // Mensagem do alerta
 		};
 	},
 	computed: {
@@ -167,32 +139,50 @@ export default {
 			}
 		},
 		// Exibe o diálogo de confirmação antes de excluir uma conta
-		confirmDelete(contaId: string) {
-			this.contaToDelete = contaId;
-			this.dialogDelete = true;
+		async confirmDelete(contaId: string) {
+			const result = await Swal.fire({
+				title: "Tem certeza?",
+				text: "Você deseja excluir esta conta?",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#d33",
+				confirmButtonText: "Sim, excluir!",
+				cancelButtonText: "Cancelar",
+				customClass: {
+					confirmButton: "custom-confirm-btn",
+					cancelButton: "custom-cancel-btn",
+				},
+			});
+
+			if (result.isConfirmed) {
+				this.deleteConta(contaId);
+			}
 		},
 		// Exclui a conta selecionada e recarrega a lista de contas
-		async deleteConta() {
-			if (this.contaToDelete) {
-				try {
-					await deleteConta(this.contaToDelete); // Chama a API para excluir a conta
-					this.dialogDelete = false; // Fecha o diálogo de confirmação
-					this.fetchContas(); // Atualiza a lista de contas
-				} catch (error) {
-					if (error.code === "23503") {
-						// Verifica se o erro é relacionado à chave estrangeira
-						this.showAlert = true; // Exibe o alerta
-						this.alertType = "error"; // Tipo de alerta (pode ser 'error', 'success', etc.)
-						this.alertMessage =
-							"Não é possível excluir esta conta, pois ela ainda está associada a outros registros.";
-					} else {
-						// Trata outros erros de maneira genérica
-						this.showAlert = true; // Exibe o alerta
-						this.alertType = "error"; // Tipo de alerta
-						this.alertMessage =
-							"Ocorreu um erro ao tentar excluir a conta.";
-					}
+		async deleteConta(contaId: string) {
+			try {
+				await deleteConta(contaId);
+				await this.fetchContas();
+
+				Swal.fire({
+					title: "Sucesso!",
+					text: "Conta excluída com sucesso.",
+					icon: "success",
+					timer: 2000,
+					showConfirmButton: false,
+				});
+			} catch (error) {
+				let errorMessage = "Ocorreu um erro ao tentar excluir a conta.";
+				if (error.code === "23503") {
+					errorMessage =
+						"Não é possível excluir esta conta, pois ela está associada a outros registros.";
 				}
+
+				Swal.fire({
+					title: "Erro",
+					text: errorMessage,
+					icon: "error",
+				});
 			}
 		},
 	},
