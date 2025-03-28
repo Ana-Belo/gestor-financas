@@ -26,7 +26,7 @@
 
 					<!-- Checkbox para aceitar os termos de uso -->
 					<v-row align="center" justify="space-between">
-						<v-checkbox label="Eu aceito os termos de uso" hide-details></v-checkbox>
+						<v-checkbox v-model="acceptTerms" label="Eu aceito os termos de uso" hide-details></v-checkbox>
 					</v-row>
 
 					<!-- Botão de criação de conta -->
@@ -41,9 +41,6 @@
 					>
 						<span>Criar conta</span>
 					</v-btn>
-
-					<!-- Componente de alerta para exibir mensagens -->
-					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
 
 					<v-divider class="my-5" />
 
@@ -77,19 +74,18 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { register } from "../api/authService";
+import Swal from "sweetalert2"; // Importando SweetAlert2
 
 export default defineComponent({
 	name: "Cadastro",
 	data() {
 		return {
-			showAlert: false, // Controla a exibição do alerta
-			alertType: "success", // Tipo do alerta (sucesso ou erro)
-			alertMessage: "", // Mensagem do alerta
-			loading: false, // Indica se a requisição de login está em andamento
+			loading: false, // Indica se a requisição de cadastro está em andamento
 			fullName: "", // Armazena o nome completo do usuário
 			email: "", // Armazena o email do usuário
 			password: "", // Armazena a senha do usuário
 			passwordConfirm: "", // Armazena a confirmação da senha
+			acceptTerms: false, // Controle do checkbox de aceite dos termos
 		};
 	},
 	methods: {
@@ -97,25 +93,56 @@ export default defineComponent({
 		async handleRegister() {
 			this.loading = true; // Ativa o estado de carregamento
 			try {
+				// Verifica se os termos foram aceitos
+				if (!this.acceptTerms) {
+					Swal.fire({
+						title: "Atenção",
+						text: "Você precisa aceitar os termos de uso para continuar.",
+						icon: "warning",
+						confirmButtonColor: "#f39c12",
+						confirmButtonText: "OK",
+					});
+					this.loading = false;
+					return;
+				}
+
 				// Verifica se as senhas coincidem
 				if (this.password !== this.passwordConfirm) {
-					this.alertType = "error";
-					this.alertMessage = "As senhas não coincidem.";
-					this.showAlert = true;
+					Swal.fire({
+						title: "Erro",
+						text: "As senhas não coincidem.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						confirmButtonText: "OK",
+					});
+					this.loading = false;
 					return;
 				}
 
 				// Chama a API de registro
 				await register(this.email, this.password, this.fullName);
-				this.alertType = "success";
-				this.alertMessage =
-					"Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.";
-				this.showAlert = true;
+
+				// Exibe mensagem de sucesso e redireciona
+				Swal.fire({
+					title: "Sucesso!",
+					text: "Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.",
+					icon: "success",
+					confirmButtonColor: "#3085d6",
+					confirmButtonText: "OK",
+				}).then(() => {
+					this.$router.push("/login");
+				});
 			} catch (error) {
 				console.error("Erro ao cadastrar:", error);
-				this.alertType = "error";
-				this.alertMessage = "Erro ao cadastrar. Tente novamente.";
-				this.showAlert = true;
+				Swal.fire({
+					title: "Erro",
+					text: "Erro ao cadastrar. Tente novamente.",
+					icon: "error",
+					confirmButtonColor: "#d33",
+					confirmButtonText: "OK",
+				});
+			} finally {
+				this.loading = false; // Desativa o estado de carregamento
 			}
 		},
 	},

@@ -47,6 +47,7 @@
 import { defineComponent } from "vue";
 import { getContaById, addConta, updateConta } from "../api/contaService";
 import { getUser } from "../api/authService";
+import Swal from "sweetalert2";
 
 export default defineComponent({
 	name: "FormConta",
@@ -78,8 +79,56 @@ export default defineComponent({
 		// Salva ou edita uma conta
 		async saveConta() {
 			this.loading = true;
+
 			try {
+				// Validação dos campos obrigatórios individualmente
+				if (!this.conta.nome) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Nome' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					})
+					this.loading = false;
+					return;
+				}
+
+				if (!this.conta.tipo) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Tipo' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					})
+					this.loading = false;
+					return;
+				}
+
+				if (this.conta.saldo_inicial === null || this.conta.saldo_inicial === undefined) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Saldo Inicial' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					})
+					this.loading = false;
+					return;
+				}
+
 				this.conta.saldo_inicial = this.conta.saldo_inicial / 100;
+
 				if (this.formMode === "add") {
 					const user = await getUser();
 					const usuarioId = user?.id || "";
@@ -97,13 +146,24 @@ export default defineComponent({
 						this.conta.saldo_inicial
 					);
 				}
+
 				this.$router.go(-1); // Retorna para a página anterior após salvar
 			} catch (error) {
 				console.error("Erro ao salvar conta:", error);
+				Swal.fire({
+					title: "Erro",
+					text: "Erro ao salvar conta. Tente novamente.",
+					icon: "error",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				})
 			} finally {
 				this.loading = false;
 			}
-		},
+		}
 	},
 	// Carrega os dados da conta ao criar o componente
 	created() {

@@ -119,6 +119,7 @@ import {
 	updateCategoria,
 } from "../api/categoriaService";
 import { getUser } from "../api/authService";
+import Swal from "sweetalert2";
 
 export default defineComponent({
 	name: "FormCategoria",
@@ -200,7 +201,69 @@ export default defineComponent({
 		// Salva ou edita uma categoria
 		async saveCategoria() {
 			this.loading = true;
+
 			try {
+				// Validação dos campos obrigatórios individualmente
+				if (!this.categoria.nome) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Nome' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (!this.categoria.tipo) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Tipo' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (!this.categoria.icone) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Ícone' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (!this.categoria.cor_icone) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Cor do Ícone' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
 				if (this.formMode === "add") {
 					const user = await getUser();
 					const usuarioId = user?.id || "";
@@ -220,9 +283,20 @@ export default defineComponent({
 						this.categoria.cor_icone
 					);
 				}
+
 				this.$router.go(-1); // Retorna para a página anterior após salvar
 			} catch (error) {
 				console.error("Erro ao salvar categoria:", error);
+				Swal.fire({
+					title: "Erro",
+					text: "Erro ao salvar categoria. Tente novamente.",
+					icon: "error",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				});
 			} finally {
 				this.loading = false;
 			}

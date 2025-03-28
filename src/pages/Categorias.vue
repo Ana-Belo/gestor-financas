@@ -65,7 +65,7 @@
 									<v-icon size="18" color="grey">mdi-pencil</v-icon>
 								</v-btn>
 
-								<!-- Botão de exclusão com confirmação -->
+								<!-- Botão de exclusão com SweetAlert -->
 								<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(categoria.id)">
 									<v-icon size="18" color="grey">mdi-delete</v-icon>
 								</v-btn>
@@ -88,35 +88,12 @@
 			@prevPage="prevPage"
 			@nextPage="nextPage"
 		/>
-
-		<!-- Diálogo de confirmação para deletar -->
-		<v-dialog v-model="dialogDelete" width="auto">
-			<v-card>
-				<!-- Título do diálogo -->
-				<v-card-title class="headline">Excluir Categoria</v-card-title>
-
-				<!-- Mensagem de confirmação -->
-				<v-card-text>
-					Tem certeza de que deseja excluir esta categoria?
-					<!-- Componente de alerta para exibir mensagens -->
-					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
-				</v-card-text>
-
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<!-- Botão para cancelar -->
-					<v-btn color="grey" text @click="dialogDelete = false">Cancelar</v-btn>
-
-					<!-- Botão para confirmar exclusão -->
-					<v-btn color="red" @click="deleteCategoria">Excluir</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
 	</v-main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import Swal from "sweetalert2";
 import { getCategorias, deleteCategoria } from "../api/categoriaService";
 import { getUser } from "../api/authService";
 
@@ -128,11 +105,6 @@ export default defineComponent({
 			categorias: [], // Lista de categorias obtidas da API
 			currentPage: 1, // Página atual da paginação
 			itemsPerPage: 10, // Quantidade de itens por página
-			dialogDelete: false, // Controle de exibição do diálogo de confirmação de exclusão
-			categoriaToDelete: null, // Categoria que será deletada
-			showAlert: false, // Controla a exibição do alerta
-			alertType: "success", // Tipo do alerta (sucesso ou erro)
-			alertMessage: "", // Mensagem do alerta
 		};
 	},
 	computed: {
@@ -145,16 +117,11 @@ export default defineComponent({
 		// Retorna um subconjunto das categorias filtradas, de acordo com a paginação
 		paginatedCategorias() {
 			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-			return this.filteredCategorias.slice(
-				startIndex,
-				startIndex + this.itemsPerPage
-			);
+			return this.filteredCategorias.slice(startIndex, startIndex + this.itemsPerPage);
 		},
 		// Calcula o número total de páginas com base na quantidade de itens filtrados
 		totalPages() {
-			return Math.ceil(
-				this.filteredCategorias.length / this.itemsPerPage
-			);
+			return Math.ceil(this.filteredCategorias.length / this.itemsPerPage);
 		},
 	},
 	methods: {
@@ -176,32 +143,65 @@ export default defineComponent({
 				this.currentPage--;
 			}
 		},
-		// Exibe o diálogo de confirmação antes de excluir uma categoria
+		// Exibe o diálogo de confirmação antes de excluir uma categoria com SweetAlert2
 		confirmDelete(categoriaId: string) {
-			this.categoriaToDelete = categoriaId;
-			this.dialogDelete = true;
+			Swal.fire({
+				title: "Tem certeza?",
+				text: "Essa ação não pode ser desfeita!",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#d33",
+				cancelButtonColor: "#6c757d",
+				confirmButtonText: "Sim, excluir!",
+				cancelButtonText: "Cancelar",
+				customClass: {
+					confirmButton: "custom-confirm-btn",
+					cancelButton: "custom-cancel-btn",
+				},
+			}).then((result) => {
+				if (result.isConfirmed) {
+					this.deleteCategoria(categoriaId);
+				}
+			});
 		},
 		// Exclui a categoria selecionada e recarrega a lista de categorias
-		async deleteCategoria() {
-			if (this.categoriaToDelete) {
-				try {
-					await deleteCategoria(this.categoriaToDelete); // Chama a API para excluir a categoria
-					this.dialogDelete = false; // Fecha o diálogo de confirmação
-					this.fetchCategorias(); // Atualiza a lista de categorias
-				} catch (error) {
-					if (error.code === "23503") {
-						// Verifica se o erro é relacionado à chave estrangeira
-						this.showAlert = true; // Exibe o alerta
-						this.alertType = "error"; // Tipo de alerta (pode ser 'error', 'success', etc.)
-						this.alertMessage =
-							"Não é possível excluir esta categoria, pois ela ainda está associada a outros registros.";
-					} else {
-						// Trata outros erros de maneira genérica
-						this.showAlert = true; // Exibe o alerta
-						this.alertType = "error"; // Tipo de alerta
-						this.alertMessage =
-							"Ocorreu um erro ao tentar excluir a categoria.";
-					}
+		async deleteCategoria(categoriaId: string) {
+			try {
+				await deleteCategoria(categoriaId); // Chama a API para excluir a categoria
+				Swal.fire({
+					title: "Excluído!",
+					text: "A categoria foi removida com sucesso.",
+					icon: "success",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				});
+				this.fetchCategorias(); // Atualiza a lista de categorias
+			} catch (error) {
+				if (error.code === "23503") {
+					Swal.fire({
+						title: "Erro",
+						text: "Não é possível excluir esta categoria pois está associada a outros registros.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+				} else {
+					Swal.fire({
+						title: "Erro",
+						text: "Ocorreu um erro ao tentar excluir a categoria.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
 				}
 			}
 		},
