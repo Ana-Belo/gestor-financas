@@ -48,6 +48,7 @@ import { defineComponent } from "vue";
 import { getOrcamentoById, addOrcamento, updateOrcamento } from "../api/orcamentoService";
 import { getUser } from "../api/authService";
 import { getCategorias } from "../api/categoriaService";
+import Swal from "sweetalert2";
 
 export default defineComponent({
 	name: "FormOrcamento",
@@ -86,28 +87,86 @@ export default defineComponent({
 		// Salva ou edita uma orcamento
 		async saveOrcamento() {
 			this.loading = true;
+
 			try {
-				//COLOCAR VALIDAÇÕES PARA VERIFICAR SE O USUARIO PREENCHEU TODOS OS CAMPOS
+				// Validação dos campos obrigatórios individualmente
+				if (!this.orcamento.categoria_id) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Categoria' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (this.orcamento.valor_limite === null || this.orcamento.valor_limite === undefined) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Valor Limite' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (!this.orcamento.mes_ano) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Mês/Ano' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
 				this.orcamento.valor_limite = this.orcamento.valor_limite / 100;
+
 				if (this.formMode === "add") {
 					const usuarioId = this.user?.id || "";
 					await addOrcamento(
 						usuarioId,
 						this.orcamento.categoria_id,
 						this.orcamento.valor_limite,
-						this.orcamento.mes_ano,
+						this.orcamento.mes_ano
 					);
 				} else {
 					await updateOrcamento(
 						this.orcamento.id,
 						this.orcamento.categoria_id,
 						this.orcamento.valor_limite,
-						this.orcamento.mes_ano,
+						this.orcamento.mes_ano
 					);
 				}
+
 				this.$router.go(-1); // Retorna para a página anterior após salvar
 			} catch (error) {
-				console.error("Erro ao salvar orcamento:", error);
+				console.error("Erro ao salvar orçamento:", error);
+				Swal.fire({
+					title: "Erro",
+					text: "Erro ao salvar orçamento. Tente novamente.",
+					icon: "error",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				});
 			} finally {
 				this.loading = false;
 			}

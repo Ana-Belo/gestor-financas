@@ -170,6 +170,11 @@ export default {
 					icon: "success",
 					timer: 2000,
 					showConfirmButton: false,
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
 				});
 			} catch (error) {
 				let errorMessage = "Ocorreu um erro ao tentar excluir a conta.";
@@ -182,6 +187,11 @@ export default {
 					title: "Erro",
 					text: errorMessage,
 					icon: "error",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
 				});
 			}
 		},

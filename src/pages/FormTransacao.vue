@@ -60,6 +60,7 @@ import { getTransacaoById, addTransacao, updateTransacao } from "../api/transaca
 import { getUser } from "../api/authService";
 import { getCategorias } from "../api/categoriaService";
 import { getContas } from "../api/contaService";
+import Swal from "sweetalert2";
 
 export default defineComponent({
 	name: "FormTransacao",
@@ -117,9 +118,101 @@ export default defineComponent({
 		// Salva ou edita uma transacao
 		async saveTransacao() {
 			this.loading = true;
+
 			try {
-				//COLOCAR VALIDAÇÕES PARA VERIFICAR SE O USUARIO PREENCHEU TODOS OS CAMPOS
+				// Validação dos campos obrigatórios individualmente
+				if (!this.transacao.descricao) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Nome transação' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+				
+				if (!this.transacao.conta_id) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Conta' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (!this.transacao.categoria_id) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Categoria' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (!this.transacao.tipo) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Tipo' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (this.transacao.valor === null || this.transacao.valor === undefined) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Valor' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
+				if (!this.transacao.data) {
+					Swal.fire({
+						title: "Erro",
+						text: "O campo 'Data' é obrigatório.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+					this.loading = false;
+					return;
+				}
+
 				this.transacao.valor = this.transacao.valor / 100;
+
 				if (this.formMode === "add") {
 					const usuarioId = this.user?.id || "";
 					await addTransacao(
@@ -130,7 +223,7 @@ export default defineComponent({
 						this.transacao.tipo,
 						this.transacao.valor,
 						this.transacao.data,
-						this.transacao.pendente,
+						this.transacao.pendente
 					);
 				} else {
 					await updateTransacao(
@@ -141,12 +234,23 @@ export default defineComponent({
 						this.transacao.tipo,
 						this.transacao.valor,
 						this.transacao.data,
-						this.transacao.pendente,
+						this.transacao.pendente
 					);
 				}
+
 				this.$router.go(-1); // Retorna para a página anterior após salvar
 			} catch (error) {
-				console.error("Erro ao salvar transacao:", error);
+				console.error("Erro ao salvar transação:", error);
+				Swal.fire({
+					title: "Erro",
+					text: "Erro ao salvar transação. Tente novamente.",
+					icon: "error",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				});
 			} finally {
 				this.loading = false;
 			}

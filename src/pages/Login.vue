@@ -37,9 +37,6 @@
 						<span>Entrar</span>
 					</v-btn>
 
-					<!-- Exibe mensagem de erro caso o login falhe -->
-					<Alerta v-model="showAlert" :type="alertType" :message="alertMessage" />
-
 					<!-- Divisor visual entre seções -->
 					<v-divider class="my-5" />
 
@@ -78,14 +75,12 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { login } from "../api/authService";
+import Swal from "sweetalert2"; // Importando SweetAlert2
 
 export default defineComponent({
 	name: "Login",
 	data() {
 		return {
-			showAlert: false, // Controla a exibição do alerta
-			alertType: "success", // Tipo do alerta (sucesso ou erro)
-			alertMessage: "", // Mensagem do alerta
 			email: "", // Armazena o e-mail digitado pelo usuário
 			password: "", // Armazena a senha digitada pelo usuário
 			loading: false, // Indica se a requisição de login está em andamento
@@ -98,13 +93,17 @@ export default defineComponent({
 			try {
 				// Chama a API de login passando e-mail e senha
 				await login(this.email, this.password);
-				this.$router.push("/home"); // Redireciona para a página inicial após login bem-sucedido
+	
+				this.$router.push("/home");
 			} catch (error) {
 				console.error("Erro ao realizar login:", error);
-				this.alertType = "error";
-				this.alertMessage =
-					"Erro ao realizar login. Verifique suas credenciais e tente novamente.";
-				this.showAlert = true;
+				Swal.fire({
+					title: "Erro",
+					text: "Erro ao realizar login. Verifique suas credenciais e tente novamente.",
+					icon: "error",
+					confirmButtonColor: "#d33",
+					confirmButtonText: "OK",
+				});
 			} finally {
 				this.loading = false; // Desativa o estado de carregamento
 			}
@@ -119,6 +118,6 @@ export default defineComponent({
 	border-radius: 16px;
 }
 .custom-gradient {
-	background: linear-gradient(to bottom, #ffffff, #ffffff);
+	background: linear-gradient(to bottom, #7e94ba, #ffffff);
 }
 </style>
