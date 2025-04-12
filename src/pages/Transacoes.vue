@@ -29,54 +29,54 @@
 
 			<!-- Lista de transacoes com paginação -->
 			<v-table density="comfortable">
-			<thead>
-				<tr>
-				<th class="text-center">Descrição</th>
-				<th class="text-center">Tipo</th>
-				<th class="text-center">Valor</th>
-				<th class="text-center">Data</th>
-				<th></th>
-				</tr>
-			</thead>
-			<tbody v-if="paginatedTransacoes.length">
-				<tr v-for="(transacao, index) in paginatedTransacoes" :key="index">
-				<!-- Descrição da transação -->
-				<td class="text-center">{{ transacao.descricao }}</td>
-				
-				<!-- Tipo da  transação (Receita ou Despesa) -->
-				<td class="text-center">
-					<v-chip :color="transacao.tipo === 'Receita' ? 'green' : 'red'">
-					{{ transacao.tipo }}
-					</v-chip>
-				</td>
-				
-				<!-- Valor da transação -->
-				<td class="text-center">{{ transacao.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
-				
-				<!-- Data da transação -->
-				<td class="text-center">{{ new Date(transacao.data).toLocaleDateString('pt-BR') }}</td>
-				
-				<!-- Botões de ação (Editar e Excluir) -->
-				<td class="text-center">
-					<!-- Botão de edição -->
-					<v-btn
-					icon
-					flat
-					density="compact"
-					@click="$router.push({ path: '/formtransacao', query: { id: transacao.id } })"
-					color="transparent"
-					>
-					<v-icon size="18" color="grey">mdi-pencil</v-icon>
-					</v-btn>
-					
-					<!-- Botão de exclusão com confirmação -->
-					<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(transacao.id)">
-					<v-icon size="18" color="grey">mdi-delete</v-icon>
-					</v-btn>
-				</td>
-				</tr>
-			</tbody>
-			<tbody v-else>
+				<thead>
+					<tr>
+						<th class="text-center">Descrição</th>
+						<th class="text-center">Tipo</th>
+						<th class="text-center">Valor</th>
+						<th class="text-center">Data</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody v-if="paginatedTransacoes.length">
+					<tr v-for="(transacao, index) in paginatedTransacoes" :key="index">
+						<!-- Descrição da transação -->
+						<td class="text-center">{{ transacao.descricao }}</td>
+
+						<!-- Tipo da  transação (Receita ou Despesa) -->
+						<td class="text-center">
+							<v-chip :color="transacao.tipo === 'Receita' ? 'green' : 'red'">{{ transacao.tipo }}</v-chip>
+						</td>
+
+						<!-- Valor da transação -->
+						<td
+							class="text-center"
+						>{{ transacao.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
+
+						<!-- Data da transação -->
+						<td class="text-center">{{ new Date(transacao.data).toLocaleDateString('pt-BR') }}</td>
+
+						<!-- Botões de ação (Editar e Excluir) -->
+						<td class="text-center">
+							<!-- Botão de edição -->
+							<v-btn
+								icon
+								flat
+								density="compact"
+								@click="$router.push({ path: '/formtransacao', query: { id: transacao.id } })"
+								color="transparent"
+							>
+								<v-icon size="18" color="grey">mdi-pencil</v-icon>
+							</v-btn>
+
+							<!-- Botão de exclusão com confirmação -->
+							<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(transacao.id)">
+								<v-icon size="18" color="grey">mdi-delete</v-icon>
+							</v-btn>
+						</td>
+					</tr>
+				</tbody>
+				<tbody v-else>
 					<tr>
 						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
 					</tr>
@@ -116,7 +116,7 @@
 
 <script lang="ts">
 import { getUser } from "../api/authService";
-import { getTransacao , deleteTransacao } from "../api/transacaoService";
+import { getTransacao, deleteTransacao } from "../api/transacaoService";
 
 export default {
 	name: "Transacoes",
@@ -134,7 +134,9 @@ export default {
 		// Filtra transacoes com base no termo de busca digitado pelo usuário
 		filteredTransacoes() {
 			return this.transacoes.filter((transacao) =>
-				transacao.descricao.toLowerCase().includes(this.search.toLowerCase())
+				transacao.descricao
+					.toLowerCase()
+					.includes(this.search.toLowerCase())
 			);
 		},
 		// Retorna um subconjunto das transacoes filtradas, de acordo com a paginação
@@ -147,7 +149,9 @@ export default {
 		},
 		// Calcula o número total de páginas com base na quantidade de itens filtrados
 		totalPages() {
-			return Math.ceil(this.filteredTransacoes.length / this.itemsPerPage);
+			return Math.ceil(
+				this.filteredTransacoes.length / this.itemsPerPage
+			);
 		},
 	},
 	methods: {

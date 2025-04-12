@@ -5,7 +5,14 @@ import { v4 as uuidv4 } from 'uuid'; // Importa a biblioteca UUID para gerar ide
 export async function getTransacao(usuarioId: string) {
     const { data, error } = await supabase
         .from('transacoes') // Acessa a tabela 'transacoes'
-        .select('*') // Seleciona todas as colunas
+        .select(`
+            id,
+            tipo,
+            valor,
+            descricao,
+            data,
+            categoria:categorias(nome, icone, cor_icone)
+        `)  // Seleciona todas as colunas
         .eq('usuario_id', usuarioId); // Filtra pelo ID do usuário
 
     if (error) {
@@ -33,7 +40,7 @@ export async function getTransacaoById(transacaoId: string) {
 }
 
 // Função para adicionar uma nova transacao
-export async function addTransacao(usuarioId: string, contaId: string, categoriaId: string, descricao: string, tipo: string, valor: number, dataTransacao: string, pendente: boolean ) {
+export async function addTransacao(usuarioId: string, contaId: string, categoriaId: string, descricao: string, tipo: string, valor: number, dataTransacao: string, pendente: boolean) {
     const id = uuidv4(); // Gera um identificador único para a transacao
     const dataCriacao = new Date(); // Define a data de criação como a data atual
     const dataAtualizacao = new Date(); // Define a data de atualização como a data atual

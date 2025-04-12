@@ -121,6 +121,12 @@
 				class="home-card pa-1 mb-2"
 				rounded="lg"
 				elevation="1"
+				@click="$router.push({ path: '/formtransacao', query: { id: transacao.id } })"
+				@mousedown="iniciarPressionar(transacao, $event)"
+				@mouseup="cancelarPressionar"
+				@mouseleave="cancelarPressionar"
+				@touchstart="iniciarPressionar(transacao, $event)"
+				@touchend="cancelarPressionar"
 			>
 				<v-card-text class="py-1">
 					<v-row no-gutters align="center">
@@ -147,19 +153,19 @@
 
 		<!-- Navegação inferior -->
 		<v-bottom-navigation grow color="black" class="mt-4">
-			<v-btn>
+			<v-btn to="/transacoes">
 				<v-icon>mdi-cash</v-icon>
-				<span>Extrato</span>
+				<span>Transações</span>
 			</v-btn>
-			<v-btn>
+			<v-btn to="/graficos">
 				<v-icon>mdi-chart-bar</v-icon>
-				<span>Estatísticas</span>
+				<span>Gráficos</span>
 			</v-btn>
-			<v-btn>
+			<v-btn to="/contas">
 				<v-icon>mdi-wallet</v-icon>
 				<span>Carteira</span>
 			</v-btn>
-			<v-btn>
+			<v-btn to="/perfil">
 				<v-icon>mdi-account-circle</v-icon>
 				<span>Perfil</span>
 			</v-btn>
@@ -189,7 +195,7 @@
 					<v-switch v-model="novaReceita.pendente" label="Receita Pendente?" />
 				</v-card-text>
 				<v-card-actions class="pa-4">
-					<v-btn @click="dialogReceita = false">Cancelar</v-btn>
+					<v-btn @click="dialogReceita = false, clear()">Cancelar</v-btn>
 					<v-btn color="green" @click="salvarReceita">Salvar</v-btn>
 				</v-card-actions>
 			</v-card>
@@ -219,7 +225,7 @@
 					<v-switch v-model="novaDespesa.pendente" label="Despesa Pendente?" />
 				</v-card-text>
 				<v-card-actions class="pa-4">
-					<v-btn @click="dialogDespesa = false">Cancelar</v-btn>
+					<v-btn @click="dialogDespesa = false, clear()">Cancelar</v-btn>
 					<v-btn color="red" @click="salvarDespesa">Salvar</v-btn>
 				</v-card-actions>
 			</v-card>
@@ -240,12 +246,15 @@ import {
 } from "../api/homeService";
 import { getCategorias } from "../api/categoriaService";
 import { getContas } from "../api/contaService";
+import Swal from "sweetalert2";
+import { deleteTransacao } from "../api/transacaoService";
 
 export default defineComponent({
 	name: "Home",
 	data() {
 		return {
 			drawer: false,
+			timeoutId: null,
 			user: {},
 			saldoTotal: 0,
 			despesasPendentes: 0,
@@ -286,8 +295,8 @@ export default defineComponent({
 				{ icon: "mdi-cash", title: "Orçamentos", to: "/orcamento" },
 				{
 					icon: "mdi-chart-line",
-					title: "Relatórios",
-					to: "/relatorios",
+					title: "Gráficos",
+					to: "/graficos",
 				},
 				{
 					icon: "mdi-cog",
@@ -336,6 +345,7 @@ export default defineComponent({
 				usuario_id: this.user.id,
 				tipo: "Receita",
 			});
+			this.clear();
 			this.dialogReceita = false;
 			await this.fetchSaldos();
 		},
@@ -346,8 +356,25 @@ export default defineComponent({
 				usuario_id: this.user.id,
 				tipo: "Despesa",
 			});
+			this.clear();
 			this.dialogDespesa = false;
 			await this.fetchSaldos();
+		},
+		clear() {
+			this.novaReceita = {
+				valor: "",
+				descricao: "",
+				conta_id: "",
+				categoria_id: "",
+				data: new Date().toISOString().split("T")[0],
+			};
+			this.novaDespesa = {
+				valor: "",
+				descricao: "",
+				conta_id: "",
+				categoria_id: "",
+				data: new Date().toISOString().split("T")[0],
+			};
 		},
 		getName() {
 			const fullName = this.user?.user_metadata?.full_name || "";
@@ -365,6 +392,38 @@ export default defineComponent({
 		formatarData(data) {
 			const [ano, mes, dia] = data.split("T")[0].split("-");
 			return `${dia}/${mes}/${ano}`;
+		},
+		async deleteTransacoes(transacao) {
+			Swal.fire({
+				title: "Deseja excluir esta transação?",
+				text: transacao.descricao,
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#d33",
+				cancelButtonColor: "#3085d6",
+				confirmButtonText: "Sim, excluir!",
+				cancelButtonText: "Cancelar",
+				customClass: {
+					confirmButton: "custom-confirm-btn",
+					cancelButton: "custom-cancel-btn",
+				},
+			}).then(async (result) => {
+				if (result.isConfirmed) {
+					await deleteTransacao(transacao.id);
+					await this.fetchSaldos();
+				}
+			});
+		},
+		iniciarPressionar(transacao: any) {
+			this.timeoutId = setTimeout(() => {
+				this.deleteTransacoes(transacao);
+			}, 700);
+		},
+		cancelarPressionar() {
+			if (this.timeoutId) {
+				clearTimeout(this.timeoutId);
+				this.timeoutId = null;
+			}
 		},
 		async fetchSaldos() {
 			this.saldoTotal = await getSaldoAtual(this.user.id);
