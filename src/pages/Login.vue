@@ -46,7 +46,7 @@
 					<!-- Botões de login social (Google e Apple) -->
 					<v-row class="mt-2">
 						<v-col cols="6">
-							<v-btn block variant="outlined" rounded="lg">
+							<v-btn block variant="outlined" rounded="lg" @click="handleGoogleLogin">
 								<v-icon class="mr-2">mdi-google</v-icon>Google
 							</v-btn>
 						</v-col>
@@ -74,7 +74,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { login } from "../api/authService";
+import { login, loginWithGoogle } from "../api/authService";
 import Swal from "sweetalert2"; // Importando SweetAlert2
 
 export default defineComponent({
@@ -93,7 +93,7 @@ export default defineComponent({
 			try {
 				// Chama a API de login passando e-mail e senha
 				await login(this.email, this.password);
-	
+
 				this.$router.push("/home");
 			} catch (error) {
 				console.error("Erro ao realizar login:", error);
@@ -106,6 +106,14 @@ export default defineComponent({
 				});
 			} finally {
 				this.loading = false; // Desativa o estado de carregamento
+			}
+		},
+		async handleGoogleLogin() {
+			try {
+				await loginWithGoogle();
+				// O usuário será redirecionado pelo Supabase
+			} catch (error) {
+				alert("Erro ao fazer login com Google.");
 			}
 		},
 	},

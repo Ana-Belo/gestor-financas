@@ -53,3 +53,17 @@ export async function register(email: string, password: string, fullName: string
 
     return data; // Retorna os dados da conta criada
 }
+
+// Função para login com Google
+export async function loginWithGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+    });
+
+    if (error) {
+        console.error("Erro ao fazer login com Google:", error.message);
+        throw error;
+    }
+
+    return data;
+}

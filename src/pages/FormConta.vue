@@ -92,7 +92,7 @@ export default defineComponent({
 							confirmButton: "custom-confirm-btn",
 							cancelButton: "custom-cancel-btn",
 						},
-					})
+					});
 					this.loading = false;
 					return;
 				}
@@ -107,12 +107,15 @@ export default defineComponent({
 							confirmButton: "custom-confirm-btn",
 							cancelButton: "custom-cancel-btn",
 						},
-					})
+					});
 					this.loading = false;
 					return;
 				}
 
-				if (this.conta.saldo_inicial === null || this.conta.saldo_inicial === undefined) {
+				if (
+					this.conta.saldo_inicial === null ||
+					this.conta.saldo_inicial === undefined
+				) {
 					Swal.fire({
 						title: "Erro",
 						text: "O campo 'Saldo Inicial' é obrigatório.",
@@ -122,7 +125,7 @@ export default defineComponent({
 							confirmButton: "custom-confirm-btn",
 							cancelButton: "custom-cancel-btn",
 						},
-					})
+					});
 					this.loading = false;
 					return;
 				}
@@ -159,11 +162,11 @@ export default defineComponent({
 						confirmButton: "custom-confirm-btn",
 						cancelButton: "custom-cancel-btn",
 					},
-				})
+				});
 			} finally {
 				this.loading = false;
 			}
-		}
+		},
 	},
 	// Carrega os dados da conta ao criar o componente
 	created() {

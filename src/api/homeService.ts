@@ -88,6 +88,7 @@ export async function getSaldoContas(usuarioId: string) {
 
         // Retorna a lista de contas com saldo atualizado
         return contas.map(conta => ({
+            id: conta.id,
             nome: conta.nome,
             tipo: conta.tipo,
             saldo: saldoContas[conta.id] || 0
@@ -105,6 +106,7 @@ export async function getUltimasTransacoes(usuarioId: string) {
         const { data: transacoes, error: transacoesError } = await supabase
             .from('transacoes')
             .select(`
+                id,
                 tipo,
                 valor,
                 descricao,

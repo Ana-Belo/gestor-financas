@@ -33,6 +33,7 @@
 					<tr>
 						<th class="text-center">Descrição</th>
 						<th class="text-center">Tipo</th>
+						<th class="text-center">Saldo</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -44,6 +45,10 @@
 							<!-- Tipo da conta (Carteira, Conta corrente ou Conta digital) -->
 							<v-chip>{{ conta.tipo }}</v-chip>
 						</td>
+						<!-- Saldo da conta -->
+						<td
+							class="text-center"
+						>{{ conta.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
 						<!-- Botões de ação (Editar e Excluir) -->
 						<td class="text-center">
 							<div class="d-flex justify-center">
@@ -85,8 +90,9 @@
 </template>
 
 <script lang="ts">
+import { getSaldoContas } from "../api/homeService";
 import { getUser } from "../api/authService";
-import { getContas, deleteConta } from "../api/contaService";
+import { deleteConta } from "../api/contaService";
 import Swal from "sweetalert2";
 
 export default {
@@ -124,7 +130,7 @@ export default {
 		async fetchContas() {
 			const user = await getUser();
 			const usuarioId = user?.id || ""; // Obtém o ID do usuário autenticado
-			this.contas = await getContas(usuarioId); // Busca as contas associadas ao usuário
+			this.contas = await getSaldoContas(usuarioId); // Busca as contas associadas ao usuário
 		},
 		// Avança para a próxima página se não for a última
 		nextPage() {
