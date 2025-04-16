@@ -1,7 +1,7 @@
 <template>
 	<!-- Componente principal -->
 	<v-main>
-		<v-container height="85vh">
+		<v-container height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<!-- Botão para voltar à página anterior -->
@@ -31,45 +31,52 @@
 			<v-table density="comfortable">
 				<thead>
 					<tr>
-						<th class="text-center">Ícone</th>
-						<th class="text-center">Descrição</th>
-						<th class="text-center">Tipo</th>
 						<th></th>
+						<th class="text-center px-1">Ícone</th>
+						<th class="text-center px-1">Descrição</th>
+						<th class="text-center px-1">Tipo</th>
 					</tr>
 				</thead>
 				<tbody v-if="paginatedCategorias.length">
 					<tr v-for="(categoria, index) in paginatedCategorias" :key="index">
-						<td class="text-center">
+						<!-- Botão de menu com opções Editar e Excluir para Categoria -->
+						<td class="text-center px-1">
+							<div class="d-flex justify-center">
+								<v-menu transition="scale-transition" offset-y>
+									<template #activator="{ props }">
+										<v-btn icon v-bind="props" flat density="compact" color="transparent">
+											<v-icon size="18" color="grey">mdi-dots-vertical</v-icon>
+										</v-btn>
+									</template>
+
+									<v-list>
+										<v-list-item
+											@click="$router.push({ path: '/formcategoria', query: { id: categoria.id } })"
+										>
+											<v-list-item-title>Editar</v-list-item-title>
+										</v-list-item>
+										<v-list-item @click="confirmDelete(categoria.id)">
+											<v-list-item-title>Excluir</v-list-item-title>
+										</v-list-item>
+									</v-list>
+								</v-menu>
+							</div>
+						</td>
+						<td class="text-center px-1">
 							<!-- Ícone da categoria -->
-							<v-avatar size="30" :color="categoria.cor_icone">
+							<v-avatar variant="outlined" size="30" :color="categoria.cor_icone">
 								<v-icon size="18">{{ categoria.icone }}</v-icon>
 							</v-avatar>
 						</td>
 						<!-- Nome da categoria -->
-						<td class="text-center">{{ categoria.nome }}</td>
-						<td class="text-center">
+						<td class="text-center px-1">{{ categoria.nome }}</td>
+						<td class="text-center px-1">
 							<!-- Tipo da categoria (Despesa ou Receita) -->
-							<v-chip :color="categoria.tipo === 'Despesa' ? 'error' : 'success'">{{ categoria.tipo }}</v-chip>
-						</td>
-						<!-- Botões de ação (Editar e Excluir) -->
-						<td class="text-center">
-							<div class="d-flex justify-center">
-								<!-- Botão de edição -->
-								<v-btn
-									icon
-									flat
-									density="compact"
-									@click="$router.push({ path: '/formcategoria', query: { id: categoria.id } })"
-									color="transparent"
-								>
-									<v-icon size="18" color="grey">mdi-pencil</v-icon>
-								</v-btn>
-
-								<!-- Botão de exclusão com SweetAlert -->
-								<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(categoria.id)">
-									<v-icon size="18" color="grey">mdi-delete</v-icon>
-								</v-btn>
-							</div>
+							<v-chip
+								variant="outlined"
+								density="comfortable"
+								:color="categoria.tipo === 'Despesa' ? 'error' : 'success'"
+							>{{ categoria.tipo }}</v-chip>
 						</td>
 					</tr>
 				</tbody>
@@ -117,11 +124,16 @@ export default defineComponent({
 		// Retorna um subconjunto das categorias filtradas, de acordo com a paginação
 		paginatedCategorias() {
 			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-			return this.filteredCategorias.slice(startIndex, startIndex + this.itemsPerPage);
+			return this.filteredCategorias.slice(
+				startIndex,
+				startIndex + this.itemsPerPage
+			);
 		},
 		// Calcula o número total de páginas com base na quantidade de itens filtrados
 		totalPages() {
-			return Math.ceil(this.filteredCategorias.length / this.itemsPerPage);
+			return Math.ceil(
+				this.filteredCategorias.length / this.itemsPerPage
+			);
 		},
 	},
 	methods: {

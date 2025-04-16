@@ -9,7 +9,7 @@
 			</v-btn>
 
 			<!-- Avatar do usuário com a inicial do nome -->
-			<v-avatar color="primary" class="ml-2">{{ getName().split("")[0] }}</v-avatar>
+			<v-avatar variant="outlined" color="primary" class="ml-2">{{ getName().split("")[0] }}</v-avatar>
 
 			<!-- Saudação com o nome do usuário -->
 			<v-toolbar-title>Olá, {{ getName() }}</v-toolbar-title>
@@ -131,7 +131,7 @@
 				<v-card-text class="py-1">
 					<v-row no-gutters align="center">
 						<v-col cols="2">
-							<v-avatar size="40" :color="transacao.categoria.cor_icone">
+							<v-avatar variant="outlined" size="40" :color="transacao.categoria.cor_icone">
 								<v-icon>{{ transacao.categoria.icone }}</v-icon>
 							</v-avatar>
 						</v-col>
@@ -177,7 +177,7 @@
 				<v-card-title>Adicionar Receita</v-card-title>
 				<v-card-text class="mb-n4">
 					<!-- Campo para inserir o valor -->
-					<TextForm v-model="novaReceita.valor" label="Valor" mask="currency" />
+					<TextForm v-model="novaReceita.valor" label="Valor" type="number" />
 
 					<!-- Campo para inserir a descrição -->
 					<TextForm v-model="novaReceita.descricao" label="Descrição" />
@@ -207,7 +207,7 @@
 				<v-card-title>Adicionar Despesa</v-card-title>
 				<v-card-text class="mb-n4">
 					<!-- Campo para inserir o valor -->
-					<TextForm v-model="novaDespesa.valor" label="Valor" mask="currency" />
+					<TextForm v-model="novaDespesa.valor" label="Valor" type="number" />
 
 					<!-- Campo para inserir a descrição -->
 					<TextForm v-model="novaDespesa.descricao" label="Descrição" />
@@ -255,7 +255,9 @@ export default defineComponent({
 		return {
 			drawer: false,
 			timeoutId: null,
-			user: {},
+			user: {
+				id: "",
+			},
 			saldoTotal: 0,
 			despesasPendentes: 0,
 			receitasPendentes: 0,
@@ -266,14 +268,14 @@ export default defineComponent({
 			dialogReceita: false,
 			dialogDespesa: false,
 			novaReceita: {
-				valor: "",
+				valor: 0,
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",
 				data: new Date().toISOString().split("T")[0],
 			},
 			novaDespesa: {
-				valor: "",
+				valor: 0,
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",
@@ -341,7 +343,6 @@ export default defineComponent({
 		async salvarReceita() {
 			await addTransacao({
 				...this.novaReceita,
-				valor: this.novaReceita.valor / 100,
 				usuario_id: this.user.id,
 				tipo: "Receita",
 			});
@@ -352,7 +353,6 @@ export default defineComponent({
 		async salvarDespesa() {
 			await addTransacao({
 				...this.novaDespesa,
-				valor: this.novaDespesa.valor / 100,
 				usuario_id: this.user.id,
 				tipo: "Despesa",
 			});
@@ -362,14 +362,14 @@ export default defineComponent({
 		},
 		clear() {
 			this.novaReceita = {
-				valor: "",
+				valor: 0,
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",
 				data: new Date().toISOString().split("T")[0],
 			};
 			this.novaDespesa = {
-				valor: "",
+				valor: 0,
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",

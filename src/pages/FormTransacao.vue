@@ -1,6 +1,6 @@
 <template>
 	<v-main>
-		<v-container height="82vh">
+		<v-container height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -17,20 +17,24 @@
 				<TextForm v-model="transacao.descricao" label="Nome da Transação" class="mb-4" />
 
 				<!-- Campo para selecionar tipo da transacao -->
-				<SelectForm v-model="transacao.tipo" :items="tiposTransacao" label="Selecione o tipo de transação" />
+				<SelectForm
+					v-model="transacao.tipo"
+					:items="tiposTransacao"
+					label="Selecione o tipo de transação"
+				/>
 
 				<!-- Campo para inserir o saldo inicial da transacao -->
-				<TextForm v-model="transacao.valor" label="Valor" mask="currency" />
+				<TextForm v-model="transacao.valor" label="Valor" type="number" />
 
 				<SelectForm v-model="transacao.conta_id" :items="contasMap" label="Conta" />
 
-					<!-- Campo para selecionar a categoria -->
+				<!-- Campo para selecionar a categoria -->
 				<SelectForm v-model="transacao.categoria_id" :items="categoriasMap" label="Categoria" />
 
-					<!-- Campo para selecionar a data da transação -->
+				<!-- Campo para selecionar a data da transação -->
 				<TextForm v-model="transacao.data" label="Data da Transação" type="date" />
 
-					<!-- Campo para indicar se a receita está pendente -->
+				<!-- Campo para indicar se a receita está pendente -->
 				<v-switch v-model="transacao.pendente" label="Transação Pendente?" />
 			</v-card>
 		</v-container>
@@ -56,7 +60,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getTransacaoById, addTransacao, updateTransacao } from "../api/transacaoService";
+import {
+	getTransacaoById,
+	addTransacao,
+	updateTransacao,
+} from "../api/transacaoService";
 import { getUser } from "../api/authService";
 import { getCategorias } from "../api/categoriaService";
 import { getContas } from "../api/contaService";
@@ -66,19 +74,21 @@ export default defineComponent({
 	name: "FormTransacao",
 	data() {
 		return {
-			user: {},
+			user: {
+				id: "",
+			},
 			contasOptions: [],
 			categoriasOptions: [],
 			// Objeto que armazena os dados da transacao
 			transacao: {
 				id: "",
 				conta_id: "",
-            	categoria_id: "",
-            	descricao: "",
-            	tipo: "Receita",
-            	valor: "",
-            	data: "",
-            	pendente: false,
+				categoria_id: "",
+				descricao: "",
+				tipo: "",
+				valor: 0,
+				data: new Date().toISOString().split("T")[0],
+				pendente: false,
 			},
 			formMode: "add" as "edit" | "add", // Define se o formulário está no modo adicionar ou editar
 			loading: false, // Indica se a operação está carregando
@@ -99,17 +109,19 @@ export default defineComponent({
 		},
 	},
 	watch: {
-   		"transacao.tipo": function () {
-     	 	this.transacao.categoria_id = "";
-    	}
-  	},
+		"transacao.tipo": function (newValue, oldValue) {
+			if (newValue != oldValue && oldValue) {
+				this.transacao.categoria_id = "";
+			}
+		},
+	},
 	methods: {
 		// Obtém os dados da transacao caso esteja em modo edição
 		async getData(transacaoId: string) {
 			try {
 				this.transacao = await getTransacaoById(transacaoId);
 				this.transacao.data = this.transacao.data.split("T")[0];
-				this.transacao.valor = this.transacao.valor * 100;
+				this.transacao.valor = this.transacao.valor;
 				this.formMode = "edit";
 			} catch (error) {
 				console.error("Erro ao obter a transacao:", error);
@@ -135,7 +147,7 @@ export default defineComponent({
 					this.loading = false;
 					return;
 				}
-				
+
 				if (!this.transacao.conta_id) {
 					Swal.fire({
 						title: "Erro",
@@ -181,7 +193,10 @@ export default defineComponent({
 					return;
 				}
 
-				if (this.transacao.valor === null || this.transacao.valor === undefined) {
+				if (
+					this.transacao.valor === null ||
+					this.transacao.valor === undefined
+				) {
 					Swal.fire({
 						title: "Erro",
 						text: "O campo 'Valor' é obrigatório.",
@@ -210,8 +225,6 @@ export default defineComponent({
 					this.loading = false;
 					return;
 				}
-
-				this.transacao.valor = this.transacao.valor / 100;
 
 				if (this.formMode === "add") {
 					const usuarioId = this.user?.id || "";
@@ -267,6 +280,10 @@ export default defineComponent({
 		const transacaoId = this.$route.query.id;
 		if (transacaoId) {
 			this.getData(transacaoId);
+		} else {
+			this.transacao.tipo = "Receita";
+			this.transacao.categoria_id = this.categoriasMap[0].value;
+			this.transacao.conta_id = this.contasMap[0].value;
 		}
 	},
 });

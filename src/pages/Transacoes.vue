@@ -1,7 +1,7 @@
 <template>
 	<!-- Componente principal -->
 	<v-main>
-		<v-container height="85vh">
+		<v-container height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<!-- Botão para voltar à página anterior -->
@@ -31,54 +31,60 @@
 			<v-table density="comfortable">
 				<thead>
 					<tr>
-						<th class="text-center">Descrição</th>
-						<th class="text-center">Tipo</th>
-						<th class="text-center">Valor</th>
-						<th class="text-center">Data</th>
 						<th></th>
+						<th class="text-start px-1">Descrição</th>
+						<th class="text-center px-1">Tipo</th>
+						<th class="text-center px-1">Data</th>
+						<th class="text-end px-1">Valor</th>
 					</tr>
 				</thead>
 				<tbody v-if="paginatedTransacoes.length">
 					<tr v-for="(transacao, index) in paginatedTransacoes" :key="index">
-						<!-- Descrição da transação -->
-						<td class="text-center">{{ transacao.descricao }}</td>
+						<!-- Botão de menu com opções Editar e Excluir para Transação -->
+						<td class="text-center px-1">
+							<div class="d-flex justify-center">
+								<v-menu transition="scale-transition" offset-y>
+									<template #activator="{ props }">
+										<v-btn icon v-bind="props" flat density="compact" color="transparent">
+											<v-icon size="18" color="grey">mdi-dots-vertical</v-icon>
+										</v-btn>
+									</template>
 
-						<!-- Tipo da  transação (Receita ou Despesa) -->
-						<td class="text-center">
-							<v-chip :color="transacao.tipo === 'Receita' ? 'green' : 'red'">{{ transacao.tipo }}</v-chip>
+									<v-list>
+										<v-list-item
+											@click="$router.push({ path: '/formtransacao', query: { id: transacao.id } })"
+										>
+											<v-list-item-title>Editar</v-list-item-title>
+										</v-list-item>
+
+										<v-list-item @click="confirmDelete(transacao.id)">
+											<v-list-item-title>Excluir</v-list-item-title>
+										</v-list-item>
+									</v-list>
+								</v-menu>
+							</div>
 						</td>
-
+						<!-- Descrição da transação -->
+						<td class="text-start px-1">{{ transacao.descricao }}</td>
+						<!-- Tipo da  transação (Receita ou Despesa) -->
+						<td class="text-center px-1">
+							<v-chip
+								variant="outlined"
+								density="comfortable"
+								:color="transacao.tipo === 'Receita' ? 'green' : 'red'"
+							>{{ transacao.tipo }}</v-chip>
+						</td>
+						<!-- Data da transação -->
+						<td class="text-center px-1">{{ new Date(transacao.data).toLocaleDateString('pt-BR') }}</td>
 						<!-- Valor da transação -->
 						<td
-							class="text-center"
+							class="text-end px-1"
 						>{{ transacao.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
-
-						<!-- Data da transação -->
-						<td class="text-center">{{ new Date(transacao.data).toLocaleDateString('pt-BR') }}</td>
-
-						<!-- Botões de ação (Editar e Excluir) -->
-						<td class="text-center">
-							<!-- Botão de edição -->
-							<v-btn
-								icon
-								flat
-								density="compact"
-								@click="$router.push({ path: '/formtransacao', query: { id: transacao.id } })"
-								color="transparent"
-							>
-								<v-icon size="18" color="grey">mdi-pencil</v-icon>
-							</v-btn>
-
-							<!-- Botão de exclusão com confirmação -->
-							<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(transacao.id)">
-								<v-icon size="18" color="grey">mdi-delete</v-icon>
-							</v-btn>
-						</td>
 					</tr>
 				</tbody>
 				<tbody v-else>
 					<tr>
-						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
+						<td colspan="5" class="text-center">Nenhum registro encontrado</td>
 					</tr>
 				</tbody>
 			</v-table>

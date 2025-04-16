@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'; // Importa a biblioteca UUID para gerar ide
 export async function getOrcamento(usuarioId: string) {
     const { data, error } = await supabase
         .from('orcamentos') // Acessa a tabela 'orcamentos'
-        .select('*') // Seleciona todas as colunas
+        .select('*, categoria:categorias(nome, icone, cor_icone)') // Seleciona todas as colunas
         .eq('usuario_id', usuarioId); // Filtra pelo ID do usuário
 
     if (error) {
@@ -33,7 +33,7 @@ export async function getOrcamentoById(orcamentoId: string) {
 }
 
 // Função para adicionar uma nova orcamento
-export async function addOrcamento(usuarioId: string, categoriaId: string, valor_limite: number, mes_ano: string) {
+export async function addOrcamento(usuarioId: string, categoriaId: string, valor_limite: number) {
     const id = uuidv4(); // Gera um identificador único para a orcamento
     const dataCriacao = new Date(); // Define a data de criação como a data atual
     const dataAtualizacao = new Date(); // Define a data de atualização como a data atual
@@ -45,7 +45,6 @@ export async function addOrcamento(usuarioId: string, categoriaId: string, valor
             usuario_id: usuarioId,
             categoria_id: categoriaId,
             valor_limite,
-            mes_ano,
             data_criacao: dataCriacao,
             data_atualizacao: dataAtualizacao
         }]);
@@ -59,7 +58,7 @@ export async function addOrcamento(usuarioId: string, categoriaId: string, valor
 }
 
 // Função para atualizar os dados de uma orcamento
-export async function updateOrcamento(orcamentoId: string, categoriaId: string, valor_limite: number, mes_ano: string) {
+export async function updateOrcamento(orcamentoId: string, categoriaId: string, valor_limite: number) {
     const dataAtualizacao = new Date(); // Define a nova data de atualização
 
     const { data, error } = await supabase
@@ -67,7 +66,6 @@ export async function updateOrcamento(orcamentoId: string, categoriaId: string, 
         .update({ // Atualiza os dados da orcamento
             categoria_id: categoriaId,
             valor_limite,
-            mes_ano,
             data_atualizacao: dataAtualizacao
         })
         .eq('id', orcamentoId); // Filtra pela orcamento específica a ser atualizada
@@ -94,9 +92,3 @@ export async function deleteOrcamento(orcamentoId: string) {
 
     return data; // Retorna os dados da orcamento removida (caso necessário)
 }
-
-/*utilizar campos: "id" uuid PRIMARY KEY,
-  "usuario_id" uuid,
-  "categoria_id" uuid,
-  "valor_limite" decimal,
-  "mes_ano" varchar,*/
