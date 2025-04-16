@@ -1,6 +1,6 @@
 <template>
 	<v-main>
-		<v-container height="82vh">
+		<v-container height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -20,7 +20,7 @@
 				<SelectForm v-model="conta.tipo" :items="tiposConta" label="Selecione o tipo de conta" />
 
 				<!-- Campo para inserir o saldo inicial da conta -->
-				<TextForm v-model="conta.saldo_inicial" label="Saldo inicial" mask="currency" />
+				<TextForm v-model="conta.saldo_inicial" label="Saldo inicial" type="number" />
 			</v-card>
 		</v-container>
 
@@ -70,7 +70,6 @@ export default defineComponent({
 		async getData(contaId: string) {
 			try {
 				this.conta = await getContaById(contaId);
-				this.conta.saldo_inicial = this.conta.saldo_inicial * 100;
 				this.formMode = "edit";
 			} catch (error) {
 				console.error("Erro ao obter a conta:", error);
@@ -129,8 +128,6 @@ export default defineComponent({
 					this.loading = false;
 					return;
 				}
-
-				this.conta.saldo_inicial = this.conta.saldo_inicial / 100;
 
 				if (this.formMode === "add") {
 					const user = await getUser();

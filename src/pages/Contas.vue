@@ -1,7 +1,7 @@
 <template>
 	<!-- Componente principal -->
 	<v-main>
-		<v-container height="85vh">
+		<v-container height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<!-- Botão para voltar à página anterior -->
@@ -31,44 +31,45 @@
 			<v-table density="comfortable">
 				<thead>
 					<tr>
-						<th class="text-center">Descrição</th>
-						<th class="text-center">Tipo</th>
-						<th class="text-center">Saldo</th>
 						<th></th>
+						<th class="text-start px-1">Descrição</th>
+						<th class="text-center px-1">Tipo</th>
+						<th class="text-end px-1">Saldo</th>
 					</tr>
 				</thead>
 				<tbody v-if="paginatedContas.length">
 					<tr v-for="(conta, index) in paginatedContas" :key="index">
+						<!-- Botão de menu com opções Editar e Excluir para Conta -->
+						<td class="text-center px-1">
+							<div class="d-flex justify-center">
+								<v-menu transition="scale-transition" offset-y>
+									<template #activator="{ props }">
+										<v-btn icon v-bind="props" flat density="compact" color="transparent">
+											<v-icon size="18" color="grey">mdi-dots-vertical</v-icon>
+										</v-btn>
+									</template>
+
+									<v-list>
+										<v-list-item @click="$router.push({ path: '/formconta', query: { id: conta.id } })">
+											<v-list-item-title>Editar</v-list-item-title>
+										</v-list-item>
+										<v-list-item @click="confirmDelete(conta.id)">
+											<v-list-item-title>Excluir</v-list-item-title>
+										</v-list-item>
+									</v-list>
+								</v-menu>
+							</div>
+						</td>
 						<!-- Nome da conta -->
-						<td class="text-center">{{ conta.nome }}</td>
-						<td class="text-center">
+						<td class="text-start px-1">{{ conta.nome }}</td>
+						<td class="text-center px-1">
 							<!-- Tipo da conta (Carteira, Conta corrente ou Conta digital) -->
-							<v-chip>{{ conta.tipo }}</v-chip>
+							<v-chip variant="outlined" density="comfortable">{{ conta.tipo }}</v-chip>
 						</td>
 						<!-- Saldo da conta -->
 						<td
-							class="text-center"
+							class="text-end px-1"
 						>{{ conta.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
-						<!-- Botões de ação (Editar e Excluir) -->
-						<td class="text-center">
-							<div class="d-flex justify-center">
-								<!-- Botão de edição -->
-								<v-btn
-									icon
-									flat
-									density="compact"
-									@click="$router.push({ path: '/formconta', query: { id: conta.id } })"
-									color="transparent"
-								>
-									<v-icon size="18" color="grey">mdi-pencil</v-icon>
-								</v-btn>
-
-								<!-- Botão de exclusão com confirmação -->
-								<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(conta.id)">
-									<v-icon size="18" color="grey">mdi-delete</v-icon>
-								</v-btn>
-							</div>
-						</td>
 					</tr>
 				</tbody>
 				<tbody v-else>

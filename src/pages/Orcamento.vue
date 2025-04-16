@@ -1,7 +1,7 @@
 <template>
 	<!-- Componente principal -->
 	<v-main>
-		<v-container height="85vh">
+		<v-container height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<!-- Botão para voltar à página anterior -->
@@ -29,44 +29,56 @@
 
 			<!-- Lista de orcamentos com paginação -->
 			<v-table density="comfortable">
-			<thead>
-				<tr>
-					<th class="text-center">Valor</th>
-					<th class="text-center">Mês/Ano</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody v-if="paginatedOrcamentos.length">
-				<tr v-for="(orcamento, index) in paginatedOrcamentos" :key="index">					
-					<!-- Valor da orçamento -->
-					<td class="text-center">{{ orcamento.valor_limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
-					
-					<!-- Data da orçamento -->
-					<td class="text-center">{{orcamento.mes_ano}}</td>
-					
-					<!-- Botões de ação (Editar e Excluir) -->
-					<td class="text-center">
-						<!-- Botão de edição -->
-						<v-btn
-						icon
-						flat
-						density="compact"
-						@click="$router.push({ path: '/formorcamento', query: { id: orcamento.id } })"
-						color="transparent"
-						>
-						<v-icon size="18" color="grey">mdi-pencil</v-icon>
-						</v-btn>
-						
-						<!-- Botão de exclusão com confirmação -->
-						<v-btn icon flat density="compact" color="transparent" @click="confirmDelete(orcamento.id)">
-						<v-icon size="18" color="grey">mdi-delete</v-icon>
-						</v-btn>
-					</td>
-				</tr>
-			</tbody>
-			<tbody v-else>
+				<thead>
 					<tr>
-						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
+						<th></th>
+						<th class="text-center px-1">Categoria</th>
+						<th class="text-center px-1">Valor</th>
+					</tr>
+				</thead>
+				<tbody v-if="paginatedOrcamentos.length">
+					<tr v-for="(orcamento, index) in paginatedOrcamentos" :key="index">
+						<!-- Botão de menu com opções Editar e Excluir para Orçamento -->
+						<td class="text-center px-1">
+							<div class="d-flex justify-center">
+								<v-menu transition="scale-transition" offset-y>
+									<template #activator="{ props }">
+										<v-btn icon v-bind="props" flat density="compact" color="transparent">
+											<v-icon size="18" color="grey">mdi-dots-vertical</v-icon>
+										</v-btn>
+									</template>
+
+									<v-list>
+										<v-list-item
+											@click="$router.push({ path: '/formorcamento', query: { id: orcamento.id } })"
+										>
+											<v-list-item-title>Editar</v-list-item-title>
+										</v-list-item>
+
+										<v-list-item @click="confirmDelete(orcamento.id)">
+											<v-list-item-title>Excluir</v-list-item-title>
+										</v-list-item>
+									</v-list>
+								</v-menu>
+							</div>
+						</td>
+						<!-- Categoria do orçamento -->
+						<td class="text-center px-1">
+							<v-chip
+								variant="outlined"
+								density="comfortable"
+								:color="orcamento?.categoria.tipo === 'Despesa' ? 'error' : 'success'"
+							>{{orcamento?.categoria?.nome}}</v-chip>
+						</td>
+						<!-- Valor do orçamento -->
+						<td
+							class="text-center px-1"
+						>{{ orcamento.valor_limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
+					</tr>
+				</tbody>
+				<tbody v-else>
+					<tr>
+						<td colspan="3" class="text-center">Nenhum registro encontrado</td>
 					</tr>
 				</tbody>
 			</v-table>
@@ -104,7 +116,7 @@
 
 <script lang="ts">
 import { getUser } from "../api/authService";
-import { getOrcamento , deleteOrcamento } from "../api/orcamentoService";
+import { getOrcamento, deleteOrcamento } from "../api/orcamentoService";
 
 export default {
 	name: "Orcamentos",
@@ -122,7 +134,9 @@ export default {
 		// Filtra orcamentos com base no termo de busca digitado pelo usuário
 		filteredOrcamentos() {
 			return this.orcamentos.filter((orcamento) =>
-				orcamento.mes_ano.toLowerCase().includes(this.search.toLowerCase())
+				orcamento?.categoria?.nome
+					.toLowerCase()
+					.includes(this.search.toLowerCase())
 			);
 		},
 		// Retorna um subconjunto das orcamentos filtradas, de acordo com a paginação
@@ -135,7 +149,9 @@ export default {
 		},
 		// Calcula o número total de páginas com base na quantidade de itens filtrados
 		totalPages() {
-			return Math.ceil(this.filteredOrcamentos.length / this.itemsPerPage);
+			return Math.ceil(
+				this.filteredOrcamentos.length / this.itemsPerPage
+			);
 		},
 	},
 	methods: {
