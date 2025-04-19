@@ -7,6 +7,7 @@
 		rounded="lg"
 		density="comfortable"
 		class="mb-4"
+		:prepend-inner-icon="prependIcon"
 		@update:model-value="updateModel"
 	/>
 </template>
@@ -28,6 +29,10 @@ export default defineComponent({
 		label: {
 			type: String,
 			required: true,
+		},
+		prependIcon: {
+			type: String,
+			default: "",
 		},
 	},
 	computed: {
