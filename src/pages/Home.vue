@@ -268,14 +268,14 @@ export default defineComponent({
 			dialogReceita: false,
 			dialogDespesa: false,
 			novaReceita: {
-				valor: 0,
+				valor: "",
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",
 				data: new Date().toISOString().split("T")[0],
 			},
 			novaDespesa: {
-				valor: 0,
+				valor: "",
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",
@@ -362,14 +362,14 @@ export default defineComponent({
 		},
 		clear() {
 			this.novaReceita = {
-				valor: 0,
+				valor: "",
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",
 				data: new Date().toISOString().split("T")[0],
 			};
 			this.novaDespesa = {
-				valor: 0,
+				valor: "",
 				descricao: "",
 				conta_id: "",
 				categoria_id: "",

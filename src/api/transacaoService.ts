@@ -2,9 +2,20 @@ import { supabase } from './supabase'; // Importa a instância do Supabase para 
 import { v4 as uuidv4 } from 'uuid'; // Importa a biblioteca UUID para gerar identificadores únicos
 
 // Função para listar todas as transacoes de um usuário
-export async function getTransacao(usuarioId: string) {
-    const { data, error } = await supabase
-        .from('transacoes') // Acessa a tabela 'transacoes'
+export async function getTransacao(usuarioId: string, mesSelecionado: string = '') {
+    let dataInicio = null;
+    let dataFim = null;
+
+    if (mesSelecionado) {
+        const [mes, ano] = mesSelecionado.split('/');
+        dataInicio = new Date(`${ano}-${mes}-01`); // Primeiro dia do mês
+        dataFim = new Date(dataInicio);
+        dataFim.setMonth(dataFim.getMonth() + 1); // Primeiro dia do próximo mês
+        dataFim.setDate(dataFim.getDate() - 1); // Último dia do mês
+    }
+
+    const query = supabase
+        .from('transacoes')
         .select(`
             id,
             tipo,
@@ -12,8 +23,16 @@ export async function getTransacao(usuarioId: string) {
             descricao,
             data,
             categoria:categorias(nome, icone, cor_icone)
-        `)  // Seleciona todas as colunas
-        .eq('usuario_id', usuarioId); // Filtra pelo ID do usuário
+        `)
+        .eq('usuario_id', usuarioId);
+
+    // Aplica o filtro de data apenas se dataInicio e dataFim forem definidos
+    if (dataInicio && dataFim) {
+        query.gte('data', dataInicio.toISOString()); // Filtra pelo primeiro dia do mês
+        query.lte('data', dataFim.toISOString()); // Filtra pelo último dia do mês
+    }
+
+    const { data, error } = await query;
 
     if (error) {
         console.error('Erro ao buscar transacao:', error.message); // Loga o erro caso ocorra
