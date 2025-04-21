@@ -1,6 +1,6 @@
 <template>
 	<v-main>
-		<v-container height="75vh">
+		<v-container min-height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -18,7 +18,7 @@
 				class="mt-5"
 			/>
 
-			<v-card class="mt-n3" rounded="lg">
+			<v-card class="mt-n3 border-sm" rounded="lg">
 				<v-tabs v-model="tab" grow small>
 					<v-tab value="one" class="bg-green">
 						<v-icon left class="mr-3">mdi-arrow-up</v-icon>Receitas
@@ -52,7 +52,7 @@
 										<v-row class="font-weight-bold">
 											<v-col class="ml-4">{{i}}</v-col>
 											<v-spacer></v-spacer>
-											<v-col>{{ formatCurrency(receita.total) }}</v-col>
+											<v-col class="mr-3" cols="auto">{{ formatCurrency(receita.total) }}</v-col>
 										</v-row>
 									</template>
 								</v-progress-linear>
@@ -81,13 +81,58 @@
 										<v-row class="font-weight-bold">
 											<v-col class="ml-4">{{i}}</v-col>
 											<v-spacer></v-spacer>
-											<v-col>{{ formatCurrency(despesa.total) }}</v-col>
+											<v-col class="mr-3" cols="auto">{{ formatCurrency(despesa.total) }}</v-col>
 										</v-row>
 									</template>
 								</v-progress-linear>
 							</div>
 						</v-tabs-window-item>
 					</v-tabs-window>
+				</v-card-text>
+			</v-card>
+
+			<v-card class="mt-5 border-sm" rounded="lg" v-if="orcamentos">
+				<v-card-title class="bg-blue">Meu orçamento</v-card-title>
+				<v-divider />
+				<v-card-text>
+					<div class="mt-n10">
+						<PieChart
+							v-if="orcamentoChartData?.labels"
+							:chartData="orcamentoChartData"
+							:chartOptions="options"
+						/>
+					</div>
+					<div class="mt-n10">
+						<v-row class="font-weight-bold">
+							<v-spacer></v-spacer>
+							<v-col class="mr-3" cols="auto">Gasto / Projetado</v-col>
+						</v-row>
+						<v-divider class="my-1" />
+						<div v-for="(orcamento, i) in orcamentos" :key="i">
+							<v-row class="font-weight-bold">
+								<v-spacer></v-spacer>
+								<v-col
+									class="mr-3"
+									cols="auto"
+								>{{ formatCurrency(orcamento.totalGasto) }}/{{ formatCurrency(orcamento.total) }}</v-col>
+							</v-row>
+							<v-progress-linear
+								v-model="orcamento.porcentagem"
+								:color="`${orcamento.cor}EE`"
+								height="30"
+								class="mb-2"
+								rounded
+							>
+								<template v-slot:default="{}">
+									<v-row class="font-weight-bold">
+										<v-col class="ml-4">{{i}}</v-col>
+										<v-spacer></v-spacer>
+										<v-col class="mr-3" cols="auto">{{ orcamento.porcentagem.toFixed(2) }} %</v-col>
+									</v-row>
+								</template>
+							</v-progress-linear>
+						</div>
+					</div>
 				</v-card-text>
 			</v-card>
 		</v-container>
@@ -98,6 +143,7 @@
 import { defineComponent } from "vue";
 import { getUser } from "../api/authService";
 import { getTransacao } from "../api/transacaoService";
+import { getOrcamento } from "../api/orcamentoService";
 
 export default defineComponent({
 	name: "Graficos",
@@ -108,8 +154,10 @@ export default defineComponent({
 			months: this.gerarMeses(),
 			despesaChartData: null,
 			receitaChartData: null,
+			orcamentoChartData: null,
 			despesas: null,
 			receitas: null,
+			orcamentos: [],
 			options: {
 				responsive: true,
 				cutout: "50%",
@@ -231,6 +279,81 @@ export default defineComponent({
 							(r) => r.total
 						),
 						backgroundColor: Object.values(receitasAgrupadas).map(
+							(r) => r.cor
+						),
+						borderWidth: 1,
+					},
+				],
+			};
+
+			const orcamentos = await getOrcamento(usuarioId); // Busca as orcamentos associadas ao usuário
+
+			// Cria um mapa de gastos reais por categoria (somando despesas e receitas)
+			const gastosPorCategoria: Record<string, number> = {};
+
+			despesas.forEach((d: any) => {
+				const cat = d.categoria.nome;
+				gastosPorCategoria[cat] =
+					(gastosPorCategoria[cat] || 0) + d.valor;
+			});
+
+			receitas.forEach((r: any) => {
+				const cat = r.categoria.nome;
+				gastosPorCategoria[cat] =
+					(gastosPorCategoria[cat] || 0) + r.valor;
+			});
+
+			// Agrupa e calcula os orçamentos com base nos gastos reais
+			const orcamentosAgrupados: Record<
+				string,
+				{
+					total: number;
+					cor: string;
+					totalGasto: number;
+					porcentagem?: number;
+				}
+			> = {};
+
+			orcamentos.forEach((o: any) => {
+				const categoria = o.categoria.nome;
+				const cor = o.categoria.cor_icone || "#ccc";
+				const valorLimite = o.valor_limite;
+
+				if (!orcamentosAgrupados[categoria]) {
+					orcamentosAgrupados[categoria] = {
+						total: valorLimite,
+						cor,
+						totalGasto: 0,
+					};
+				} else {
+					orcamentosAgrupados[categoria].total += valorLimite;
+				}
+
+				// Atualiza totalGasto com os valores já computados
+				const gasto = gastosPorCategoria[categoria] || 0;
+				orcamentosAgrupados[categoria].totalGasto =
+					(orcamentosAgrupados[categoria].totalGasto || 0) + gasto;
+			});
+
+			// Calcula a porcentagem de gasto com base no orçamento da categoria
+			for (const categoria in orcamentosAgrupados) {
+				const { total, totalGasto } = orcamentosAgrupados[categoria];
+				orcamentosAgrupados[categoria].porcentagem = Number(
+					((totalGasto / total) * 100).toFixed(2)
+				);
+			}
+
+			this.orcamentos = orcamentosAgrupados;
+
+			this.orcamentoChartData = {
+				labels: Object.keys(orcamentosAgrupados),
+				datasets: [
+					{
+						label: "Total R$",
+						data: Object.values(orcamentosAgrupados).map(
+							(r) => r.total
+						),
+						backgroundColor: Object.values(orcamentosAgrupados).map(
 							(r) => r.cor
 						),
 						borderWidth: 1,

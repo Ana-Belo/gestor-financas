@@ -1,6 +1,6 @@
 <template>
 	<v-main>
-		<v-container height="75vh">
+		<v-container min-height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -58,7 +58,7 @@ export default defineComponent({
 				id: "",
 				nome: "",
 				tipo: "Carteira",
-				saldo_inicial: 0,
+				saldo_inicial: "",
 			},
 			formMode: "add" as "edit" | "add", // Define se o formulário está no modo adicionar ou editar
 			loading: false, // Indica se a operação está carregando

@@ -1,6 +1,6 @@
 <template>
 	<v-main>
-		<v-container height="75vh">
+		<v-container min-height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<v-btn icon @click="$router.go(-1)">
@@ -86,7 +86,7 @@ export default defineComponent({
 				categoria_id: "",
 				descricao: "",
 				tipo: "",
-				valor: 0,
+				valor: "",
 				data: new Date().toISOString().split("T")[0],
 				pendente: false,
 			},
