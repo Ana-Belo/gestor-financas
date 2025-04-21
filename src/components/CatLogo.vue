@@ -17,8 +17,8 @@
 				<div class="nose"></div>
 			</div>
 		</div>
-		<h2 class="margin-title text-logo">CatControle</h2>
-		<p class="text-subtitle-2 text-logo">Gerencie seu dinheiro aqui</p>
+		<h2 class="margin-title text-logo">Fin Cat</h2>
+		<p class="text-subtitle-2 text-logo">Gestor de gastos pessoais</p>
 	</div>
 </template>
 
@@ -41,8 +41,8 @@ export default {
 .margin-title {
 	margin-top: 150px;
 }
-.text-logo{
-	color: #313131;
+.text-logo {
+	color: #4d4c4c;
 }
 #frame {
 	cursor: pointer;
@@ -57,7 +57,7 @@ export default {
 	top: 4px;
 	left: 50%;
 	transform: translateX(-50%);
-	background: #ffffff1c;
+	background: #70707085;
 }
 
 #frame::before {
