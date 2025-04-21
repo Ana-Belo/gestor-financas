@@ -4,7 +4,7 @@
 		<!-- Cartão de login com fundo transparente e sem elevação -->
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<!-- Título do cartão com logo centralizado -->
-			<v-card-title class="text-center mb-10">
+			<v-card-title class="text-center mb-6">
 				<CatLogo />
 			</v-card-title>
 
@@ -18,9 +18,10 @@
 					<TextForm v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
 
 					<!-- Linha contendo checkbox "Lembre de mim" e link para recuperação de senha -->
-					<v-row align="center" justify="space-between">
-						<v-checkbox label="Lembre de mim" hide-details></v-checkbox>
-						<a href="#" class="text-black text-decoration-none">Esqueceu a senha?</a>
+					<v-row class="mb-n5">
+						<v-col>
+							<v-checkbox density="compact" label="Lembre-se de mim" hide-details></v-checkbox>
+						</v-col>
 					</v-row>
 
 					<!-- Botão de login, desabilitado enquanto a requisição está em andamento -->
@@ -36,6 +37,13 @@
 						<!-- Indicador de carregamento ao tentar logar -->
 						<span>Entrar</span>
 					</v-btn>
+
+					<v-row class="mt-0">
+						<v-spacer></v-spacer>
+						<v-col>
+							<a href="#" class="text-black text-decoration-none">Esqueceu a senha?</a>
+						</v-col>
+					</v-row>
 
 					<!-- Divisor visual entre seções -->
 					<v-divider class="my-5" />

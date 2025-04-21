@@ -2,7 +2,7 @@
 	<!-- Container centralizado para o formulário de cadastro -->
 	<v-container class="fill-height d-flex justify-center align-center custom-gradient">
 		<v-card class="login-card pa-5 bg-transparent" flat>
-			<v-card-title class="text-center mb-10">
+			<v-card-title class="text-center mb-6">
 				<!-- Componente de logo -->
 				<CatLogo />
 			</v-card-title>
@@ -25,8 +25,15 @@
 					/>
 
 					<!-- Checkbox para aceitar os termos de uso -->
-					<v-row align="center" justify="space-between">
-						<v-checkbox v-model="acceptTerms" label="Eu aceito os termos de uso" hide-details></v-checkbox>
+					<v-row class="my-n5">
+						<v-col>
+							<v-checkbox
+								density="compact"
+								v-model="acceptTerms"
+								label="Eu aceito os termos de uso"
+								hide-details
+							></v-checkbox>
+						</v-col>
 					</v-row>
 
 					<!-- Botão de criação de conta -->
@@ -63,6 +70,7 @@
 					<!-- Link para a página de login caso o usuário já tenha conta -->
 					<p class="text-center mt-4">
 						Já tem uma conta?
+						<br />
 						<v-btn variant="text" :to="'/login'" class="font-weight-bold text-decoration-none">Login</v-btn>
 					</p>
 				</v-form>

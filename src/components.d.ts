@@ -7,13 +7,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Alerta: typeof import('./components/Alerta.vue')['default']
     BarChart: typeof import('./components/BarChart.vue')['default']
     CatLogo: typeof import('./components/CatLogo.vue')['default']
-    copy: typeof import('./components/PieChart copy.vue')['default']
-    DateForm: typeof import('./components/DateForm.vue')['default']
-    DatePickerForm: typeof import('./components/DatePickerForm.vue')['default']
-    DonutChart: typeof import('./components/DonutChart.vue')['default']
     Logo: typeof import('./components/Logo.vue')['default']
     Paginacao: typeof import('./components/Paginacao.vue')['default']
     PieChart: typeof import('./components/PieChart.vue')['default']
