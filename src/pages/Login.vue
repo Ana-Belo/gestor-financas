@@ -41,10 +41,10 @@
 					<v-divider class="my-5" />
 
 					<!-- Texto indicando opções alternativas de login -->
-					<p class="text-center text-grey-darken-1">Ou continue com</p>
+					<!-- <p class="text-center text-grey-darken-1">Ou continue com</p> -->
 
 					<!-- Botões de login social (Google e Apple) -->
-					<v-row class="mt-2">
+					<!-- <v-row class="mt-2">
 						<v-col cols="6">
 							<v-btn block variant="outlined" rounded="lg" @click="handleGoogleLogin">
 								<v-icon class="mr-2">mdi-google</v-icon>Google
@@ -55,7 +55,7 @@
 								<v-icon class="mr-2">mdi-apple</v-icon>Apple
 							</v-btn>
 						</v-col>
-					</v-row>
+					</v-row>-->
 
 					<!-- Link para a página de cadastro -->
 					<p class="text-center mt-4">

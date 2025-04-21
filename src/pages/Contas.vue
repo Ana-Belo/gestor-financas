@@ -1,7 +1,7 @@
 <template>
 	<!-- Componente principal -->
 	<v-main>
-		<v-container height="75vh">
+		<v-container min-height="75vh">
 			<!-- Barra de navegação superior -->
 			<v-app-bar>
 				<!-- Botão para voltar à página anterior -->

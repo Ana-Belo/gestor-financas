@@ -44,10 +44,10 @@
 
 					<v-divider class="my-5" />
 
-					<p class="text-center text-grey-darken-1">Ou continue com</p>
+					<!-- <p class="text-center text-grey-darken-1">Ou continue com</p> -->
 
 					<!-- Opções de login social -->
-					<v-row class="mt-2">
+					<!-- <v-row class="mt-2">
 						<v-col cols="6">
 							<v-btn block variant="outlined" rounded="lg" @click="handleGoogleLogin">
 								<v-icon class="mr-2">mdi-google</v-icon>Google
@@ -58,7 +58,7 @@
 								<v-icon class="mr-2">mdi-apple</v-icon>Apple
 							</v-btn>
 						</v-col>
-					</v-row>
+					</v-row>-->
 
 					<!-- Link para a página de login caso o usuário já tenha conta -->
 					<p class="text-center mt-4">
@@ -99,8 +99,12 @@ export default defineComponent({
 						title: "Atenção",
 						text: "Você precisa aceitar os termos de uso para continuar.",
 						icon: "warning",
-						confirmButtonColor: "#f39c12",
+						confirmButtonColor: "#d33",
 						confirmButtonText: "OK",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
 					});
 					this.loading = false;
 					return;
@@ -114,6 +118,10 @@ export default defineComponent({
 						icon: "error",
 						confirmButtonColor: "#d33",
 						confirmButtonText: "OK",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
 					});
 					this.loading = false;
 					return;
@@ -127,8 +135,12 @@ export default defineComponent({
 					title: "Sucesso!",
 					text: "Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.",
 					icon: "success",
-					confirmButtonColor: "#3085d6",
+					confirmButtonColor: "#d33",
 					confirmButtonText: "OK",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
 				}).then(() => {
 					this.$router.push("/login");
 				});
@@ -140,6 +152,10 @@ export default defineComponent({
 					icon: "error",
 					confirmButtonColor: "#d33",
 					confirmButtonText: "OK",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
 				});
 			} finally {
 				this.loading = false; // Desativa o estado de carregamento
