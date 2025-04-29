@@ -306,6 +306,11 @@ export default defineComponent({
 					to: "/configuracoes",
 				},
 				{
+					icon: "mdi-cog",
+					title: "Conquistas",
+					to: "/conquistas",
+				},
+				{
 					icon: "mdi-logout",
 					title: "Sair",
 					action: "logout",
