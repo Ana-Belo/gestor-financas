@@ -20,7 +20,7 @@
 					<!-- Linha contendo checkbox "Lembre de mim" e link para recuperação de senha -->
 					<v-row class="mb-n5">
 						<v-col>
-							<v-checkbox density="compact" label="Lembre-se de mim" hide-details></v-checkbox>
+							<v-checkbox v-model="rememberMe" density="compact" label="Lembre-se de mim" hide-details></v-checkbox>
 						</v-col>
 					</v-row>
 
@@ -91,8 +91,17 @@ export default defineComponent({
 		return {
 			email: "", // Armazena o e-mail digitado pelo usuário
 			password: "", // Armazena a senha digitada pelo usuário
+			rememberMe: false,   // Indica se o usuário quer ser lembrado
 			loading: false, // Indica se a requisição de login está em andamento
 		};
+	},
+	created() {
+		// Quando o componente é criado, verifica se existe um e-mail salvo
+		const savedEmail = localStorage.getItem("rememberedEmail");
+		if (savedEmail) {
+			this.email = savedEmail;
+			this.rememberMe = true;
+		}
 	},
 	methods: {
 		// Método responsável por realizar o login
@@ -101,6 +110,12 @@ export default defineComponent({
 			try {
 				// Chama a API de login passando e-mail e senha
 				await login(this.email, this.password);
+				// Se o usuário quer ser lembrado, salva o e-mail
+				if (this.rememberMe) {
+					localStorage.setItem("rememberedEmail", this.email);
+				} else {
+					localStorage.removeItem("rememberedEmail");
+				}
 
 				this.$router.push("/home");
 			} catch (error) {
