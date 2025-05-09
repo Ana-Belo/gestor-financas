@@ -301,14 +301,14 @@ export default defineComponent({
 					to: "/graficos",
 				},
 				{
-					icon: "mdi-cog",
-					title: "Configurações",
-					to: "/configuracoes",
+					icon: "mdi-trophy",
+					title: "Conquistas",
+					to: "/conquistas",
 				},
 				{
 					icon: "mdi-cog",
-					title: "Conquistas",
-					to: "/conquistas",
+					title: "Configurações",
+					to: "/configuracoes",
 				},
 				{
 					icon: "mdi-logout",
