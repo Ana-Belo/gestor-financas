@@ -32,11 +32,17 @@ LISTAGEM DE CONQUISTAS (listagem sem o FORMS) - ok
 
 VALIDAR FORMULARIO DE CADASTROS (TODOS OS FORMS) - OK
 
-PENSAR EM UM LEIAUTE DA TELA DE MASCOTES E CONQUISTAS (figma) - nao fiz
+PENSAR EM UM LEIAUTE DA TELA DE MASCOTES E CONQUISTAS (figma) - ok
 
-LEMBRAR DO USUARIO AO CLICAR NA CHECKBOX "LEMBRE-SE DE MIM" (na login.vue) - ok? validar se ficou certo pois ao meu ver, nao esta de acordo
+LEMBRAR DO USUARIO AO CLICAR NA CHECKBOX "LEMBRE-SE DE MIM" (na login.vue) - ok
 
-VALIDAR AS MENSAGENS DE ERRO E SUCESSO SE TODAS ESTÃO COM AS CORES E MENSAGENS CORRETAS
-(criar um model padrão, e criar uma customização de mensagem e de cor)
+VALIDAR AS MENSAGENS DE ERRO E SUCESSO SE TODAS ESTÃO COM AS CORES E MENSAGENS CORRETAS - ok (welinton)
 
-**data da transação esta puxando mes/dia/ano
+INICIAR CRIAR AS TELAS DE MASCOTE E CONQUISTAS
+-copia e cola (e altera) tela de conquistas para mascote 
+- welinton : alteração do leiaute de conquistas
+- ana: "nome" varchar, "preco_moedas" integer,
+
+CONFIGURAR O ESQUECI A SENHA
+
+TESTAR FUNCIONALIDADES DO APP
