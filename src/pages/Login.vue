@@ -1,21 +1,30 @@
 <template>
-	<v-container class="fill-height d-flex justify-center align-center">
+	<!-- Container principal que ocupa toda a altura da tela e centraliza o conteúdo -->
+	<v-container class="fill-height d-flex justify-center align-center custom-gradient">
+		<!-- Cartão de login com fundo transparente e sem elevação -->
 		<v-card class="login-card pa-5 bg-transparent" flat>
-			<v-card-title class="text-center mb-15">
-				<Logo />
+			<!-- Título do cartão com logo centralizado -->
+			<v-card-title class="text-center mb-6">
+				<CatLogo />
 			</v-card-title>
 
 			<v-card-text>
+				<!-- Formulário de login -->
 				<v-form @submit.prevent="handleLogin">
-					<FormField v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
+					<!-- Campo de entrada para e-mail -->
+					<TextForm v-model="email" label="E-mail" prependIcon="mdi-email-outline" />
 
-					<FormField v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
+					<!-- Campo de entrada para senha com ícone de cadeado -->
+					<TextForm v-model="password" label="Senha" prependIcon="mdi-lock-outline" isPassword />
 
-					<v-row align="center" justify="space-between">
-						<v-checkbox label="Lembre de mim" hide-details></v-checkbox>
-						<a href="#" class="text-primary text-decoration-none">Esqueceu a senha?</a>
+					<!-- Linha contendo checkbox "Lembre de mim" e link para recuperação de senha -->
+					<v-row class="mb-n5">
+						<v-col>
+							<v-checkbox v-model="rememberMe" density="compact" label="Lembre-se de mim" hide-details></v-checkbox>
+						</v-col>
 					</v-row>
 
+					<!-- Botão de login, desabilitado enquanto a requisição está em andamento -->
 					<v-btn
 						type="submit"
 						block
@@ -23,27 +32,29 @@
 						class="mt-4"
 						size="large"
 						rounded="lg"
-						:disabled="loading"
+						:loading="loading"
 					>
-						<v-progress-circular v-if="loading" indeterminate color="white" size="20" />
-						<span v-else>Entrar</span>
+						<!-- Indicador de carregamento ao tentar logar -->
+						<span>Entrar</span>
 					</v-btn>
 
-					<v-alert
-						v-if="errorMessage"
-						type="error"
-						class="my-5"
-						variant="outlined"
-						rounded="lg"
-					>{{ errorMessage }}</v-alert>
+					<v-row class="mt-0">
+						<v-spacer></v-spacer>
+						<v-col>
+							<a href="#" class="text-black text-decoration-none">Esqueceu a senha?</a>
+						</v-col>
+					</v-row>
 
-					<v-divider class="my-5"></v-divider>
+					<!-- Divisor visual entre seções -->
+					<v-divider class="my-5" />
 
-					<p class="text-center text-grey-darken-1">Ou continue com</p>
+					<!-- Texto indicando opções alternativas de login -->
+					<!-- <p class="text-center text-grey-darken-1">Ou continue com</p> -->
 
-					<v-row class="mt-2">
+					<!-- Botões de login social (Google e Apple) -->
+					<!-- <v-row class="mt-2">
 						<v-col cols="6">
-							<v-btn block variant="outlined" rounded="lg">
+							<v-btn block variant="outlined" rounded="lg" @click="handleGoogleLogin">
 								<v-icon class="mr-2">mdi-google</v-icon>Google
 							</v-btn>
 						</v-col>
@@ -52,14 +63,15 @@
 								<v-icon class="mr-2">mdi-apple</v-icon>Apple
 							</v-btn>
 						</v-col>
-					</v-row>
+					</v-row>-->
 
+					<!-- Link para a página de cadastro -->
 					<p class="text-center mt-4">
 						Não tem uma conta?
 						<v-btn
 							variant="text"
 							:to="'/cadastro'"
-							class="text-primary font-weight-bold text-decoration-none"
+							class="font-weight-bold text-decoration-none"
 						>Cadastre-se</v-btn>
 					</p>
 				</v-form>
@@ -70,31 +82,61 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { login } from "../api/authService";
+import { login, loginWithGoogle } from "../api/authService";
+import Swal from "sweetalert2"; // Importando SweetAlert2
 
 export default defineComponent({
 	name: "Login",
 	data() {
 		return {
-			showPassword: false,
-			email: "",
-			password: "",
-			errorMessage: "",
-			loading: false,
+			email: "", // Armazena o e-mail digitado pelo usuário
+			password: "", // Armazena a senha digitada pelo usuário
+			rememberMe: false,   // Indica se o usuário quer ser lembrado
+			loading: false, // Indica se a requisição de login está em andamento
 		};
 	},
+	created() {
+		// Quando o componente é criado, verifica se existe um e-mail salvo
+		const savedEmail = localStorage.getItem("rememberedEmail");
+		if (savedEmail) {
+			this.email = savedEmail;
+			this.rememberMe = true;
+		}
+	},
 	methods: {
+		// Método responsável por realizar o login
 		async handleLogin() {
-			this.loading = true;
-			this.errorMessage = "";
-
+			this.loading = true; // Ativa o estado de carregamento
 			try {
+				// Chama a API de login passando e-mail e senha
 				await login(this.email, this.password);
+				// Se o usuário quer ser lembrado, salva o e-mail
+				if (this.rememberMe) {
+					localStorage.setItem("rememberedEmail", this.email);
+				} else {
+					localStorage.removeItem("rememberedEmail");
+				}
+
 				this.$router.push("/home");
 			} catch (error) {
-				this.errorMessage = error.message;
+				console.error("Erro ao realizar login:", error);
+				Swal.fire({
+					title: "Erro",
+					text: "Erro ao realizar login. Verifique suas credenciais e tente novamente.",
+					icon: "error",
+					confirmButtonColor: "#d33",
+					confirmButtonText: "OK",
+				});
 			} finally {
-				this.loading = false;
+				this.loading = false; // Desativa o estado de carregamento
+			}
+		},
+		async handleGoogleLogin() {
+			try {
+				await loginWithGoogle();
+				// O usuário será redirecionado pelo Supabase
+			} catch (error) {
+				alert("Erro ao fazer login com Google.");
 			}
 		},
 	},
@@ -105,5 +147,8 @@ export default defineComponent({
 .login-card {
 	width: 100%;
 	border-radius: 16px;
+}
+.custom-gradient {
+	background: linear-gradient(to bottom, #7e94ba, #ffffff);
 }
 </style>

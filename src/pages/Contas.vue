@@ -1,120 +1,206 @@
 <template>
-	<v-container>
-		<v-row class="my-5">
-			<v-col cols="6">
-				<v-btn :to="'/home'">Página Inicial</v-btn>
-			</v-col>
-			<v-col cols="6" class="text-right">
-				<v-btn @click="openDialogAdd">Adicionar Conta</v-btn>
-			</v-col>
-		</v-row>
+	<!-- Componente principal -->
+	<v-main>
+		<v-container min-height="75vh">
+			<!-- Barra de navegação superior -->
+			<v-app-bar>
+				<!-- Botão para voltar à página anterior -->
+				<v-btn icon @click="$router.go(-1)">
+					<v-icon>mdi-arrow-left</v-icon>
+				</v-btn>
 
-		<v-data-table :headers="headers" :items="contas" item-key="id">
-			<template v-slot:item.actions="{ item }">
-				<v-btn color="primary" class="mr-3" @click="editConta(item)">Editar</v-btn>
-				<v-btn color="error" @click="delConta(item.id)">Deletar</v-btn>
-			</template>
-		</v-data-table>
+				<!-- Título da página -->
+				<v-toolbar-title>Contas</v-toolbar-title>
 
-		<v-dialog v-model="dialog" max-width="500px">
-			<v-card>
-				<v-card-title>{{ formMode === 'edit' ? 'Editar Conta' : 'Adicionar Conta' }}</v-card-title>
-				<v-card-text>
-					<v-text-field v-model="nome" label="Nome da Conta" />
-					<v-text-field v-model="saldoInicial" label="Saldo Inicial" type="number" />
-					<v-select v-model="tipo" :items="tiposConta" label="Tipo" />
-				</v-card-text>
-				<v-card-actions>
-					<v-btn @click="dialog = false">Cancelar</v-btn>
-					<v-btn @click="saveConta">{{ formMode === 'edit' ? 'Salvar' : 'Adicionar' }}</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
-	</v-container>
+				<!-- Botão para adicionar nova conta -->
+				<v-btn
+					icon
+					class="bg-blue mr-4"
+					color="white"
+					density="compact"
+					@click="$router.push('/formconta')"
+				>
+					<v-icon>mdi-plus</v-icon>
+				</v-btn>
+			</v-app-bar>
+
+			<!-- Campo de pesquisa -->
+			<TextForm v-model="search" label="Pesquisar contas" prependIcon="mdi-magnify" class="mb-3" />
+
+			<!-- Lista de contas com paginação -->
+			<v-table density="comfortable">
+				<thead>
+					<tr>
+						<th></th>
+						<th class="text-start px-1">Descrição</th>
+						<th class="text-center px-1">Tipo</th>
+						<th class="text-end px-1">Saldo</th>
+					</tr>
+				</thead>
+				<tbody v-if="paginatedContas.length">
+					<tr v-for="(conta, index) in paginatedContas" :key="index">
+						<!-- Botão de menu com opções Editar e Excluir para Conta -->
+						<td class="text-center px-1">
+							<div class="d-flex justify-center">
+								<v-menu transition="scale-transition" offset-y>
+									<template #activator="{ props }">
+										<v-btn icon v-bind="props" flat density="compact" color="transparent">
+											<v-icon size="18" color="grey">mdi-dots-vertical</v-icon>
+										</v-btn>
+									</template>
+
+									<v-list>
+										<v-list-item @click="$router.push({ path: '/formconta', query: { id: conta.id } })">
+											<v-list-item-title>Editar</v-list-item-title>
+										</v-list-item>
+										<v-list-item @click="confirmDelete(conta.id)">
+											<v-list-item-title>Excluir</v-list-item-title>
+										</v-list-item>
+									</v-list>
+								</v-menu>
+							</div>
+						</td>
+						<!-- Nome da conta -->
+						<td class="text-start px-1">{{ conta.nome }}</td>
+						<td class="text-center px-1">
+							<!-- Tipo da conta (Carteira, Conta corrente ou Conta digital) -->
+							<v-chip variant="outlined" density="comfortable">{{ conta.tipo }}</v-chip>
+						</td>
+						<!-- Saldo da conta -->
+						<td
+							class="text-end px-1"
+						>{{ conta.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
+					</tr>
+				</tbody>
+				<tbody v-else>
+					<tr>
+						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
+					</tr>
+				</tbody>
+			</v-table>
+		</v-container>
+
+		<!-- Footer de paginação -->
+		<Paginacao
+			:currentPage="currentPage"
+			:totalPages="totalPages"
+			@prevPage="prevPage"
+			@nextPage="nextPage"
+		/>
+	</v-main>
 </template>
 
 <script lang="ts">
-import {
-	getContas,
-	addConta,
-	updateConta,
-	deleteConta,
-} from "../api/contaService";
+import { getSaldoContas } from "../api/homeService";
 import { getUser } from "../api/authService";
+import { deleteConta } from "../api/contaService";
+import Swal from "sweetalert2";
 
 export default {
 	name: "Contas",
 	data() {
 		return {
-			dialog: false,
-			formMode: "add" as "edit" | "add",
-			contaId: "",
-			nome: "",
-			saldoInicial: 0,
-			tipo: "",
-			tiposConta: ["carteira", "conta corrente", "conta digital"],
-			contas: [] as any[],
-			headers: [
-				{ title: "Nome", key: "nome" },
-				{ title: "Tipo", key: "tipo" },
-				{
-					title: "Saldo Inicial",
-					key: "saldo_inicial",
-					align: "center",
-				},
-				{
-					title: "Ações",
-					key: "actions",
-					sortable: false,
-					align: "center",
-				},
-			],
+			search: "", // Texto de busca para filtrar contas
+			contas: [], // Lista de contas obtidas da API
+			currentPage: 1, // Página atual da paginação
+			itemsPerPage: 10, // Quantidade de itens por página
 		};
 	},
+	computed: {
+		// Filtra contas com base no termo de busca digitado pelo usuário
+		filteredContas() {
+			return this.contas.filter((conta) =>
+				conta.nome.toLowerCase().includes(this.search.toLowerCase())
+			);
+		},
+		// Retorna um subconjunto das contas filtradas, de acordo com a paginação
+		paginatedContas() {
+			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+			return this.filteredContas.slice(
+				startIndex,
+				startIndex + this.itemsPerPage
+			);
+		},
+		// Calcula o número total de páginas com base na quantidade de itens filtrados
+		totalPages() {
+			return Math.ceil(this.filteredContas.length / this.itemsPerPage);
+		},
+	},
 	methods: {
+		// Obtém as contas da API associadas ao usuário logado
 		async fetchContas() {
 			const user = await getUser();
-			const usuarioId = user?.id || "";
-			this.contas = await getContas(usuarioId);
+			const usuarioId = user?.id || ""; // Obtém o ID do usuário autenticado
+			this.contas = await getSaldoContas(usuarioId); // Busca as contas associadas ao usuário
 		},
-		openDialogAdd() {
-			this.formMode = "add";
-			this.nome = "";
-			this.saldoInicial = 0;
-			this.tipo = "";
-			this.dialog = true;
-		},
-		async saveConta() {
-			if (this.formMode === "add") {
-				const user = await getUser();
-				await addConta(
-					user?.id || "",
-					this.nome,
-					this.tipo,
-					this.saldoInicial
-				);
-			} else {
-				await updateConta(
-					this.contaId || "",
-					this.nome,
-					this.tipo,
-					this.saldoInicial
-				);
+		// Avança para a próxima página se não for a última
+		nextPage() {
+			if (this.currentPage < this.totalPages) {
+				this.currentPage++;
 			}
-			this.dialog = false;
-			this.fetchContas();
 		},
-		editConta(item: any) {
-			this.formMode = "edit";
-			this.contaId = item.id;
-			this.nome = item.nome;
-			this.saldoInicial = item.saldo_inicial;
-			this.tipo = item.tipo;
-			this.dialog = true;
+		// Retorna para a página anterior se não for a primeira
+		prevPage() {
+			if (this.currentPage > 1) {
+				this.currentPage--;
+			}
 		},
-		async delConta(contaId: string) {
-			await deleteConta(contaId);
-			this.fetchContas();
+		// Exibe o diálogo de confirmação antes de excluir uma conta
+		async confirmDelete(contaId: string) {
+			const result = await Swal.fire({
+				title: "Tem certeza?",
+				text: "Você deseja excluir esta conta?",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#d33",
+				confirmButtonText: "Sim, excluir!",
+				cancelButtonText: "Cancelar",
+				customClass: {
+					confirmButton: "custom-confirm-btn",
+					cancelButton: "custom-cancel-btn",
+				},
+			});
+
+			if (result.isConfirmed) {
+				this.deleteConta(contaId);
+			}
+		},
+		// Exclui a conta selecionada e recarrega a lista de contas
+		async deleteConta(contaId: string) {
+			try {
+				await deleteConta(contaId);
+				await this.fetchContas();
+
+				Swal.fire({
+					title: "Sucesso!",
+					text: "Conta excluída com sucesso.",
+					icon: "success",
+					timer: 2000,
+					showConfirmButton: false,
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				});
+			} catch (error) {
+				let errorMessage = "Ocorreu um erro ao tentar excluir a conta.";
+				if (error.code === "23503") {
+					errorMessage =
+						"Não é possível excluir esta conta, pois ela está associada a outros registros.";
+				}
+
+				Swal.fire({
+					title: "Erro",
+					text: errorMessage,
+					icon: "error",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				});
+			}
 		},
 	},
 	created() {

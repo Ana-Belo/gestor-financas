@@ -1,12 +1,18 @@
 <template>
-	<v-main class="bg-white">
-		<v-container>
+	<!-- Componente principal -->
+	<v-main>
+		<v-container height="75vh">
+			<!-- Barra de navegação superior -->
 			<v-app-bar>
+				<!-- Botão para voltar à página anterior -->
 				<v-btn icon @click="$router.go(-1)">
 					<v-icon>mdi-arrow-left</v-icon>
 				</v-btn>
+
+				<!-- Título da página -->
 				<v-toolbar-title>Categorias</v-toolbar-title>
-				<v-spacer></v-spacer>
+
+				<!-- Botão para adicionar nova categoria -->
 				<v-btn
 					icon
 					class="bg-blue mr-4"
@@ -18,48 +24,83 @@
 				</v-btn>
 			</v-app-bar>
 
-			<FormField v-model="search" label="Pesquisar categorias" prependIcon="mdi-magnify" class="mb-3" />
+			<!-- Campo de pesquisa -->
+			<TextForm v-model="search" label="Pesquisar categorias" prependIcon="mdi-magnify" class="mb-3" />
 
-			<v-row v-for="(category, index) in paginatedCategories" :key="index">
-				<v-col cols="auto">
-					<v-avatar size="30" :color="category.cor_icone">
-						<v-icon size="18">{{category.icone}}</v-icon>
-					</v-avatar>
-				</v-col>
-				<v-col>{{category.nome}}</v-col>
-				<v-col class="text-center">
-					<v-chip v-if="category.tipo === 'Despesa'" color="error">{{category.tipo}}</v-chip>
-					<v-chip v-else color="success">{{category.tipo}}</v-chip>
-				</v-col>
-				<v-col cols="auto">
-					<v-btn
-						icon
-						flat
-						density="compact"
-						@click="$router.push({ path: '/formcategoria', query: { id: category.id } })"
-					>
-						<v-icon size="18" color="grey">mdi-pencil</v-icon>
-					</v-btn>
-					<v-btn icon flat density="compact">
-						<v-icon size="18" color="grey" @click="delCategoria(category.id)">mdi-delete</v-icon>
-					</v-btn>
-				</v-col>
-			</v-row>
+			<!-- Lista de categorias com paginação -->
+			<v-table density="comfortable">
+				<thead>
+					<tr>
+						<th></th>
+						<th class="text-center px-1">Ícone</th>
+						<th class="text-center px-1">Descrição</th>
+						<th class="text-center px-1">Tipo</th>
+					</tr>
+				</thead>
+				<tbody v-if="paginatedCategorias.length">
+					<tr v-for="(categoria, index) in paginatedCategorias" :key="index">
+						<!-- Botão de menu com opções Editar e Excluir para Categoria -->
+						<td class="text-center px-1">
+							<div class="d-flex justify-center">
+								<v-menu transition="scale-transition" offset-y>
+									<template #activator="{ props }">
+										<v-btn icon v-bind="props" flat density="compact" color="transparent">
+											<v-icon size="18" color="grey">mdi-dots-vertical</v-icon>
+										</v-btn>
+									</template>
+
+									<v-list>
+										<v-list-item
+											@click="$router.push({ path: '/formcategoria', query: { id: categoria.id } })"
+										>
+											<v-list-item-title>Editar</v-list-item-title>
+										</v-list-item>
+										<v-list-item @click="confirmDelete(categoria.id)">
+											<v-list-item-title>Excluir</v-list-item-title>
+										</v-list-item>
+									</v-list>
+								</v-menu>
+							</div>
+						</td>
+						<td class="text-center px-1">
+							<!-- Ícone da categoria -->
+							<v-avatar variant="outlined" size="30" :color="categoria.cor_icone">
+								<v-icon size="18">{{ categoria.icone }}</v-icon>
+							</v-avatar>
+						</td>
+						<!-- Nome da categoria -->
+						<td class="text-center px-1">{{ categoria.nome }}</td>
+						<td class="text-center px-1">
+							<!-- Tipo da categoria (Despesa ou Receita) -->
+							<v-chip
+								variant="outlined"
+								density="comfortable"
+								:color="categoria.tipo === 'Despesa' ? 'error' : 'success'"
+							>{{ categoria.tipo }}</v-chip>
+						</td>
+					</tr>
+				</tbody>
+				<tbody v-else>
+					<tr>
+						<td colspan="4" class="text-center">Nenhum registro encontrado</td>
+					</tr>
+				</tbody>
+			</v-table>
 		</v-container>
+
+		<!-- Footer de paginação -->
+		<Paginacao
+			:currentPage="currentPage"
+			:totalPages="totalPages"
+			@prevPage="prevPage"
+			@nextPage="nextPage"
+		/>
 	</v-main>
-	<v-footer class="d-flex justify-center pa-4">
-		<v-btn icon @click="prevPage" :disabled="currentPage === 1" density="compact">
-			<v-icon>mdi-chevron-left</v-icon>
-		</v-btn>
-		<small class="mx-3">Página {{currentPage}} de {{totalPages}}</small>
-		<v-btn icon @click="nextPage" :disabled="currentPage === totalPages" density="compact">
-			<v-icon>mdi-chevron-right</v-icon>
-		</v-btn>
-	</v-footer>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import Swal from "sweetalert2";
 import { getCategorias, deleteCategoria } from "../api/categoriaService";
 import { getUser } from "../api/authService";
 
@@ -67,53 +108,125 @@ export default defineComponent({
 	name: "Categorias",
 	data() {
 		return {
-			search: "",
-			categories: [],
-			currentPage: 1,
-			itemsPerPage: 10,
+			search: "", // Texto de busca para filtrar categorias
+			categorias: [], // Lista de categorias obtidas da API
+			currentPage: 1, // Página atual da paginação
+			itemsPerPage: 10, // Quantidade de itens por página
 		};
 	},
 	computed: {
-		filteredCategories() {
-			return this.categories.filter((category) =>
-				category.nome.toLowerCase().includes(this.search.toLowerCase())
+		// Filtra categorias com base no termo de busca digitado pelo usuário
+		filteredCategorias() {
+			return this.categorias.filter((categoria) =>
+				categoria.nome.toLowerCase().includes(this.search.toLowerCase())
 			);
 		},
-		paginatedCategories() {
+		// Retorna um subconjunto das categorias filtradas, de acordo com a paginação
+		paginatedCategorias() {
 			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-			const endIndex = startIndex + this.itemsPerPage;
-			return this.filteredCategories.slice(startIndex, endIndex);
+			return this.filteredCategorias.slice(
+				startIndex,
+				startIndex + this.itemsPerPage
+			);
 		},
+		// Calcula o número total de páginas com base na quantidade de itens filtrados
 		totalPages() {
 			return Math.ceil(
-				this.filteredCategories.length / this.itemsPerPage
+				this.filteredCategorias.length / this.itemsPerPage
 			);
 		},
 	},
 	methods: {
+		// Obtém as categorias da API associadas ao usuário logado
 		async fetchCategorias() {
 			const user = await getUser();
-			const usuarioId = user?.id || "";
-			this.categories = await getCategorias(usuarioId);
-			console.log("aqui", await getCategorias(usuarioId));
+			const usuarioId = user?.id || ""; // Obtém o ID do usuário autenticado
+			this.categorias = await getCategorias(usuarioId); // Busca as categorias associadas ao usuário
 		},
+		// Avança para a próxima página se não for a última
 		nextPage() {
 			if (this.currentPage < this.totalPages) {
 				this.currentPage++;
 			}
 		},
+		// Retorna para a página anterior se não for a primeira
 		prevPage() {
 			if (this.currentPage > 1) {
 				this.currentPage--;
 			}
 		},
-		async delCategoria(categoriaId: string) {
-			await deleteCategoria(categoriaId);
-			this.fetchCategorias();
+		// Exibe o diálogo de confirmação antes de excluir uma categoria com SweetAlert2
+		confirmDelete(categoriaId: string) {
+			Swal.fire({
+				title: "Tem certeza?",
+				text: "Essa ação não pode ser desfeita!",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#d33",
+				cancelButtonColor: "#6c757d",
+				confirmButtonText: "Sim, excluir!",
+				cancelButtonText: "Cancelar",
+				customClass: {
+					confirmButton: "custom-confirm-btn",
+					cancelButton: "custom-cancel-btn",
+				},
+			}).then((result) => {
+				if (result.isConfirmed) {
+					this.deleteCategoria(categoriaId);
+				}
+			});
+		},
+		// Exclui a categoria selecionada e recarrega a lista de categorias
+		async deleteCategoria(categoriaId: string) {
+			try {
+				await deleteCategoria(categoriaId); // Chama a API para excluir a categoria
+				Swal.fire({
+					title: "Excluído!",
+					text: "A categoria foi removida com sucesso.",
+					icon: "success",
+					confirmButtonColor: "#d33",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
+				});
+				this.fetchCategorias(); // Atualiza a lista de categorias
+			} catch (error) {
+				if (error.code === "23503") {
+					Swal.fire({
+						title: "Erro",
+						text: "Não é possível excluir esta categoria pois está associada a outros registros.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+				} else {
+					Swal.fire({
+						title: "Erro",
+						text: "Ocorreu um erro ao tentar excluir a categoria.",
+						icon: "error",
+						confirmButtonColor: "#d33",
+						customClass: {
+							confirmButton: "custom-confirm-btn",
+							cancelButton: "custom-cancel-btn",
+						},
+					});
+				}
+			}
 		},
 	},
+	// Método executado quando o componente é criado
 	created() {
-		this.fetchCategorias();
+		this.fetchCategorias(); // Carrega as categorias ao iniciar o componente
+	},
+	watch: {
+		// Sempre que a busca mudar, a página volta para a primeira
+		search() {
+			this.currentPage = 1;
+		},
 	},
 });
 </script>

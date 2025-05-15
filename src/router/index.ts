@@ -42,7 +42,6 @@ router.isReady().then(() => {
 
 router.beforeEach(async (to) => {
   const requiresAuth = ['/login', '/cadastro'].includes(to.path)
-  console.log(requiresAuth)
   if (!requiresAuth) {
     const user = await getUser()
     if (!user) {

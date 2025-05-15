@@ -21,3 +21,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+src/components.d.ts
+src/typed-router.d.ts
