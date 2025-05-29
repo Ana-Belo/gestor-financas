@@ -306,14 +306,14 @@ export default defineComponent({
 					to: "/conquistas",
 				},
 				{
-					icon: "mdi-cog",
-					title: "Configurações",
-					to: "/configuracoes",
+					icon: "mdi-paw",
+					title: "Mascotes",
+					to: "/mascotes",
 				},
 				{
 					icon: "mdi-cog",
-					title: "Mascotes",
-					to: "/mascotes",
+					title: "Configurações",
+					to: "/configuracoes",
 				},
 				{
 					icon: "mdi-logout",
