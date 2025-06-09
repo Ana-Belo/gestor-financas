@@ -47,9 +47,13 @@ FAZER A LIGAÇÃO ENTRE AS CONQUISTAS E AS AÇÕES PARA CONQUISTAR - WELINTON
 
 FAZER A LIGAÇÃO DE COMPRA DOS MASCOTES - WELINTON
 
-TELA DE NOTIFICAÇÕES - ANA
+TELA DE NOTIFICAÇÕES - ANA - ok
+- com base na tela de contas
+- notificacao.vue e notificacaoservise
+- "mensagem" text,
+  "data_envio" timestamp,
 
-TELA DE PERFIL - ANA
+TELA DE PERFIL - ANA   -   ok
 - NOME - GETUSER
 - E-MAIL - GETUSER
 - AVATAR (LETA INICIAL DA PESSOA) - GETUSER
@@ -60,5 +64,15 @@ TELA DE CONFIGURAÇÕES
 - EXCLUIR CONTA (PERGUNTAR SE REALMENTE DESEJA EXCLUIR)
 
 CONFIGURAR O ESQUECI A SENHA
+- 
 
 TESTAR FUNCIONALIDADES DO APP
+
+
+conquistas ideias
+-cadastro
+-cadastrou despesas
+-cadastrou constas
+-cadastrou categorias
+-login diario
+-ver anuncio

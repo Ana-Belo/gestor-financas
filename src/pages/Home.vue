@@ -15,7 +15,7 @@
 			<v-toolbar-title>Olá, {{ getName() }}</v-toolbar-title>
 
 			<!-- Ícone de notificações -->
-			<v-btn icon>
+			<v-btn icon @click="$router.push('/notificacao')">
 				<v-icon>mdi-bell-outline</v-icon>
 			</v-btn>
 		</v-app-bar>
