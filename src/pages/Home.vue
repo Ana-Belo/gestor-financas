@@ -15,7 +15,7 @@
 			<v-toolbar-title>Olá, {{ getName() }}</v-toolbar-title>
 
 			<!-- Ícone de notificações -->
-			<v-btn icon>
+			<v-btn icon @click="$router.push('/notificacao')">
 				<v-icon>mdi-bell-outline</v-icon>
 			</v-btn>
 		</v-app-bar>
@@ -306,14 +306,14 @@ export default defineComponent({
 					to: "/conquistas",
 				},
 				{
-					icon: "mdi-cog",
-					title: "Configurações",
-					to: "/configuracoes",
+					icon: "mdi-paw",
+					title: "Mascotes",
+					to: "/mascotes",
 				},
 				{
 					icon: "mdi-cog",
-					title: "Mascotes",
-					to: "/mascotes",
+					title: "Configurações",
+					to: "/configuracoes",
 				},
 				{
 					icon: "mdi-logout",
