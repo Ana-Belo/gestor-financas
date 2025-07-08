@@ -31,7 +31,18 @@ export async function getUser() {
         return null; // Retorna null indicando que não há usuário autenticado
     }
 
-    return session.user; // Retorna os dados do usuário autenticado
+    const { data: userCoin, error: errorCoin } = await supabase
+        .from('usuario_moedas')
+        .select('*')
+        .eq('usuario_id', session?.user?.id);
+
+    if (errorCoin) {
+        console.error('Erro ao buscar moedas do usuário:', errorCoin.message);
+        throw error;
+    }
+    const coinData = userCoin && userCoin.length > 0 ? userCoin[0] : { moedas_usadas: 0, total_moedas: 0 };
+
+    return { ...session.user, ...coinData } // Retorna os dados do usuário autenticado
 }
 
 // Função para registrar um novo usuário
