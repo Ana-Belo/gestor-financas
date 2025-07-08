@@ -7,7 +7,7 @@ export async function getConquistas(usuarioId: string) {
     const { data: todasConquistas, error: errorConquistas } = await supabase
         .from('conquistas')
         .select('*')
-        .order('nome', { ascending: true });
+        .order('recompensa_moedas', { ascending: true });
 
     if (errorConquistas) {
         console.error('Erro ao buscar conquistas:', errorConquistas.message);
