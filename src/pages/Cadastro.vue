@@ -4,7 +4,7 @@
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<v-card-title class="text-center mb-6">
 				<!-- Componente de logo -->
-				<CatLogo />
+				<Logo />
 			</v-card-title>
 
 			<v-card-text>
@@ -187,6 +187,6 @@ export default defineComponent({
 	border-radius: 16px;
 }
 .custom-gradient {
-	background: linear-gradient(to bottom, #7e94ba, #ffffff);
+	background: linear-gradient(to bottom, #04070c, #12213f);
 }
 </style>

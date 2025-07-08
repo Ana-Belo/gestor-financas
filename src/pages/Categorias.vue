@@ -15,7 +15,7 @@
 				<!-- Botão para adicionar nova categoria -->
 				<v-btn
 					icon
-					class="bg-blue mr-4"
+					class="bg-primary mr-4"
 					color="white"
 					density="compact"
 					@click="$router.push('/formcategoria')"

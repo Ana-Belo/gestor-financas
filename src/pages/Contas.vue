@@ -15,7 +15,7 @@
 				<!-- Botão para adicionar nova conta -->
 				<v-btn
 					icon
-					class="bg-blue mr-4"
+					class="bg-primary mr-4"
 					color="white"
 					density="compact"
 					@click="$router.push('/formconta')"
@@ -34,7 +34,7 @@
 						<th></th>
 						<th class="text-start px-1">Descrição</th>
 						<th class="text-center px-1">Tipo</th>
-						<th class="text-end px-1">Saldo</th>
+						<th class="text-end pl-1 pr-2">Saldo</th>
 					</tr>
 				</thead>
 				<tbody v-if="paginatedContas.length">
@@ -68,7 +68,7 @@
 						</td>
 						<!-- Saldo da conta -->
 						<td
-							class="text-end px-1"
+							class="text-end pl-1 pr-2"
 						>{{ conta.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
 					</tr>
 				</tbody>
