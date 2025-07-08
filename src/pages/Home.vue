@@ -1,6 +1,6 @@
 <template>
 	<!-- Container principal da aplicação -->
-	<v-main class="bg-grey-darken-3">
+	<v-main>
 		<!-- Barra de aplicativo no topo -->
 		<v-app-bar>
 			<!-- Botão para abrir/fechar o menu lateral -->

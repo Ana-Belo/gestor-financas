@@ -18,7 +18,7 @@
 					<v-card
 						:class="{ 'grey lighten-2': !mascote.comprado }"
 						class="text-center pa-3 rounded-lg"
-						outlined
+						variant="outlined"
 					>
 						<v-tooltip open-on-click location="top">
 							<template #activator="{ props }">
@@ -39,7 +39,7 @@
 						>
 							<template v-if="!mascote.comprado">
 								<div class="d-flex align-center justify-center fill-height">
-									<v-icon @click="comprarMascote(mascote)" color="gray" size="80">mdi-lock</v-icon>
+									<v-icon @click="comprarMascote(mascote)" color="#000000EE" size="80">mdi-lock</v-icon>
 								</div>
 							</template>
 						</v-img>
