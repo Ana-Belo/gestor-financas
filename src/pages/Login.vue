@@ -91,7 +91,7 @@ export default defineComponent({
 		return {
 			email: "", // Armazena o e-mail digitado pelo usuário
 			password: "", // Armazena a senha digitada pelo usuário
-			rememberMe: false,   // Indica se o usuário quer ser lembrado
+			rememberMe: false, // Indica se o usuário quer ser lembrado
 			loading: false, // Indica se a requisição de login está em andamento
 		};
 	},
@@ -126,6 +126,10 @@ export default defineComponent({
 					icon: "error",
 					confirmButtonColor: "#d33",
 					confirmButtonText: "OK",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
 				});
 			} finally {
 				this.loading = false; // Desativa o estado de carregamento

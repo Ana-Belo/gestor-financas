@@ -28,7 +28,7 @@
 				<v-row>
 					<v-col cols="6">
 						<strong>Coins</strong>
-						<div class="text-subtitle-1 text-success">1.000</div>
+						<div class="text-subtitle-1 text-success">{{ coins }}</div>
 					</v-col>
 
 					<v-col cols="6">
@@ -67,6 +67,8 @@ export default {
 				data_criacao: "",
 				data_confirmacao: "",
 				ultimo_login: "",
+				total_moedas: 0,
+				moedas_usadas: 0,
 			},
 		};
 	},
@@ -76,11 +78,15 @@ export default {
 				? this.user.nome.charAt(0).toUpperCase()
 				: "?";
 		},
+		coins(): string {
+			return (
+				this.user.total_moedas - this.user.moedas_usadas
+			).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+		},
 	},
 	methods: {
 		async fetchUser() {
 			const userData = await getUser();
-			console.log(userData);
 			this.user = {
 				id: userData?.id || "",
 				nome: userData?.user_metadata?.full_name || "Usuário",
@@ -88,6 +94,8 @@ export default {
 				data_criacao: userData?.created_at || "",
 				data_confirmacao: userData?.confirmed_at || "",
 				ultimo_login: userData?.last_sign_in_at || "",
+				moedas_usadas: userData?.moedas_usadas || 0,
+				total_moedas: userData?.total_moedas || 0,
 			};
 		},
 		formatDate(timestamp: string): string {
