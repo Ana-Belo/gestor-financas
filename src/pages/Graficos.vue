@@ -92,7 +92,7 @@
 			</v-card>
 
 			<v-card class="mt-5 border-sm" rounded="lg" v-if="orcamentos">
-				<v-card-title class="bg-blue">Meu orçamento</v-card-title>
+				<v-card-title class="bg-primary">Meu orçamento</v-card-title>
 				<v-divider />
 				<v-card-text>
 					<div class="mt-n10">

@@ -15,7 +15,7 @@
 				<!-- Botão para adicionar nova orcamento -->
 				<v-btn
 					icon
-					class="bg-blue mr-4"
+					class="bg-primary mr-4"
 					color="white"
 					density="compact"
 					@click="$router.push('/formorcamento')"
@@ -33,7 +33,7 @@
 					<tr>
 						<th></th>
 						<th class="text-center px-1">Categoria</th>
-						<th class="text-center px-1">Valor</th>
+						<th class="text-end pl-1 pr-2">Valor</th>
 					</tr>
 				</thead>
 				<tbody v-if="paginatedOrcamentos.length">
@@ -72,7 +72,7 @@
 						</td>
 						<!-- Valor do orçamento -->
 						<td
-							class="text-center px-1"
+							class="text-end pl-1 pr-2"
 						>{{ orcamento.valor_limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
 					</tr>
 				</tbody>

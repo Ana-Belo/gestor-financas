@@ -5,7 +5,7 @@
 		<v-card class="login-card pa-5 bg-transparent" flat>
 			<!-- Título do cartão com logo centralizado -->
 			<v-card-title class="text-center mb-6">
-				<CatLogo />
+				<Logo />
 			</v-card-title>
 
 			<v-card-text>
@@ -41,7 +41,7 @@
 					<v-row class="mt-0">
 						<v-spacer></v-spacer>
 						<v-col>
-							<a href="#" class="text-black text-decoration-none">Esqueceu a senha?</a>
+							<a href="#" class="text-decoration-none">Esqueceu a senha?</a>
 						</v-col>
 					</v-row>
 
@@ -91,7 +91,7 @@ export default defineComponent({
 		return {
 			email: "", // Armazena o e-mail digitado pelo usuário
 			password: "", // Armazena a senha digitada pelo usuário
-			rememberMe: false,   // Indica se o usuário quer ser lembrado
+			rememberMe: false, // Indica se o usuário quer ser lembrado
 			loading: false, // Indica se a requisição de login está em andamento
 		};
 	},
@@ -126,6 +126,10 @@ export default defineComponent({
 					icon: "error",
 					confirmButtonColor: "#d33",
 					confirmButtonText: "OK",
+					customClass: {
+						confirmButton: "custom-confirm-btn",
+						cancelButton: "custom-cancel-btn",
+					},
 				});
 			} finally {
 				this.loading = false; // Desativa o estado de carregamento
@@ -149,6 +153,6 @@ export default defineComponent({
 	border-radius: 16px;
 }
 .custom-gradient {
-	background: linear-gradient(to bottom, #7e94ba, #ffffff);
+	background: linear-gradient(to bottom, #04070c, #12213f);
 }
 </style>

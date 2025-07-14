@@ -20,6 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/Cadastro': RouteRecordInfo<'/Cadastro', '/Cadastro', Record<never, never>, Record<never, never>>,
     '/Categorias': RouteRecordInfo<'/Categorias', '/Categorias', Record<never, never>, Record<never, never>>,
+    '/Conquistas': RouteRecordInfo<'/Conquistas', '/Conquistas', Record<never, never>, Record<never, never>>,
     '/Contas': RouteRecordInfo<'/Contas', '/Contas', Record<never, never>, Record<never, never>>,
     '/FormCategoria': RouteRecordInfo<'/FormCategoria', '/FormCategoria', Record<never, never>, Record<never, never>>,
     '/FormConta': RouteRecordInfo<'/FormConta', '/FormConta', Record<never, never>, Record<never, never>>,
@@ -28,7 +29,10 @@ declare module 'vue-router/auto-routes' {
     '/Graficos': RouteRecordInfo<'/Graficos', '/Graficos', Record<never, never>, Record<never, never>>,
     '/Home': RouteRecordInfo<'/Home', '/Home', Record<never, never>, Record<never, never>>,
     '/Login': RouteRecordInfo<'/Login', '/Login', Record<never, never>, Record<never, never>>,
+    '/Mascotes': RouteRecordInfo<'/Mascotes', '/Mascotes', Record<never, never>, Record<never, never>>,
+    '/Notificacao': RouteRecordInfo<'/Notificacao', '/Notificacao', Record<never, never>, Record<never, never>>,
     '/Orcamento': RouteRecordInfo<'/Orcamento', '/Orcamento', Record<never, never>, Record<never, never>>,
+    '/Perfil': RouteRecordInfo<'/Perfil', '/Perfil', Record<never, never>, Record<never, never>>,
     '/Transacoes': RouteRecordInfo<'/Transacoes', '/Transacoes', Record<never, never>, Record<never, never>>,
   }
 }

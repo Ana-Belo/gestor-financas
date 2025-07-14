@@ -21,9 +21,14 @@
 			<v-row>
 				<v-col v-for="(conquista, index) in paginatedConquistas" :key="index" cols="6" sm="6" md="4">
 					<v-card variant="outlined" class="text-center pa-3 rounded-lg">
-						<v-card-title class="font-weight-bold">
-							<h6>{{ conquista.nome }}</h6>
-						</v-card-title>
+						<v-tooltip open-on-click location="top">
+							<template #activator="{ props }">
+								<v-card-title class="font-weight-bold" v-bind="props">
+									<h6>{{ conquista.nome }}</h6>
+								</v-card-title>
+							</template>
+							<span>{{ conquista.nome }}</span>
+						</v-tooltip>
 						<v-img
 							v-if="conquista.conquistado"
 							src="@/assets/trofeu.png"

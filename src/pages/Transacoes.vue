@@ -15,7 +15,7 @@
 				<!-- Botão para adicionar nova transacao -->
 				<v-btn
 					icon
-					class="bg-blue mr-4"
+					class="bg-primary mr-4"
 					color="white"
 					density="compact"
 					@click="$router.push('/formtransacao')"
@@ -35,7 +35,7 @@
 						<th class="text-start px-1">Descrição</th>
 						<th class="text-center px-1">Tipo</th>
 						<th class="text-center px-1">Data</th>
-						<th class="text-end px-1">Valor</th>
+						<th class="text-end pl-1 pr-2">Valor</th>
 					</tr>
 				</thead>
 				<tbody v-if="paginatedTransacoes.length">
@@ -78,7 +78,7 @@
 						<td class="text-center px-1">{{ new Date(transacao.data).toLocaleDateString('pt-BR') }}</td>
 						<!-- Valor da transação -->
 						<td
-							class="text-end px-1"
+							class="text-end pl-1 pr-2"
 						>{{ transacao.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</td>
 					</tr>
 				</tbody>
