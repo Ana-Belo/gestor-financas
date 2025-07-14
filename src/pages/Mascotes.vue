@@ -134,10 +134,11 @@ export default defineComponent({
 						},
 					});
 				} catch (error) {
-					console.error("Erro ao comprar mascote:", error.message);
 					Swal.fire({
 						title: "Erro",
-						text: "Erro ao realizar a compra. Tente novamente.",
+						text:
+							error?.message ||
+							"Erro ao realizar a compra. Tente novamente.",
 						icon: "error",
 						confirmButtonColor: "#d33",
 						confirmButtonText: "OK",
