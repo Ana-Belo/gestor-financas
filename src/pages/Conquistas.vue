@@ -108,7 +108,7 @@ export default defineComponent({
 				error,
 			} = await supabase.auth.getUser();
 			if (error) {
-				console.error("Erro ao obter usuário:", error.message);
+				console.error("Erro ao obter usuário:", error?.message);
 				return;
 			}
 			if (user) {

@@ -78,3 +78,29 @@ export async function loginWithGoogle() {
 
     return data;
 }
+
+// Função para enviar e-mail de recuperação de senha
+export async function resetPassword(email: string) {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'http://localhost:3000/redefinirsenha'
+    });
+
+    if (error) {
+        console.error("Erro ao enviar e-mail de redefinição:", error.message);
+        throw error;
+    }
+
+    return data;
+}
+
+// Função para alterar a senha do usuário
+export async function updatePassword(newPassword: string) {
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (error) {
+        console.error("Erro ao atualizar senha:", error.message);
+        throw error;
+    }
+
+    return data;
+}
