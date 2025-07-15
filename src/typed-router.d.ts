@@ -20,8 +20,10 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/Cadastro': RouteRecordInfo<'/Cadastro', '/Cadastro', Record<never, never>, Record<never, never>>,
     '/Categorias': RouteRecordInfo<'/Categorias', '/Categorias', Record<never, never>, Record<never, never>>,
+    '/Configuracoes': RouteRecordInfo<'/Configuracoes', '/Configuracoes', Record<never, never>, Record<never, never>>,
     '/Conquistas': RouteRecordInfo<'/Conquistas', '/Conquistas', Record<never, never>, Record<never, never>>,
     '/Contas': RouteRecordInfo<'/Contas', '/Contas', Record<never, never>, Record<never, never>>,
+    '/EsqueciSenha': RouteRecordInfo<'/EsqueciSenha', '/EsqueciSenha', Record<never, never>, Record<never, never>>,
     '/FormCategoria': RouteRecordInfo<'/FormCategoria', '/FormCategoria', Record<never, never>, Record<never, never>>,
     '/FormConta': RouteRecordInfo<'/FormConta', '/FormConta', Record<never, never>, Record<never, never>>,
     '/FormOrcamento': RouteRecordInfo<'/FormOrcamento', '/FormOrcamento', Record<never, never>, Record<never, never>>,
@@ -33,6 +35,7 @@ declare module 'vue-router/auto-routes' {
     '/Notificacao': RouteRecordInfo<'/Notificacao', '/Notificacao', Record<never, never>, Record<never, never>>,
     '/Orcamento': RouteRecordInfo<'/Orcamento', '/Orcamento', Record<never, never>, Record<never, never>>,
     '/Perfil': RouteRecordInfo<'/Perfil', '/Perfil', Record<never, never>, Record<never, never>>,
+    '/RedefinirSenha': RouteRecordInfo<'/RedefinirSenha', '/RedefinirSenha', Record<never, never>, Record<never, never>>,
     '/Transacoes': RouteRecordInfo<'/Transacoes', '/Transacoes', Record<never, never>, Record<never, never>>,
   }
 }

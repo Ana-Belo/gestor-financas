@@ -41,7 +41,7 @@
 					<v-row class="mt-0">
 						<v-spacer></v-spacer>
 						<v-col>
-							<a href="#" class="text-decoration-none">Esqueceu a senha?</a>
+							<router-link to="/esquecisenha" class="text-decoration-none">Esqueceu a senha?</router-link>
 						</v-col>
 					</v-row>
 
