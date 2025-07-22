@@ -182,6 +182,13 @@ export default defineComponent({
 			},
 		};
 	},
+	watch: {
+		mesSelecionado(novo, antigo) {
+			if (novo !== antigo) {
+				this.fetchDados();
+			}
+		},
+	},
 	methods: {
 		formatCurrency(value: number) {
 			return new Intl.NumberFormat("pt-BR", {
@@ -192,7 +199,6 @@ export default defineComponent({
 		async fetchDados() {
 			const user = await getUser();
 			const usuarioId = user?.id || "";
-			this.mesSelecionado = this.getMesAtual();
 			const dados = await getTransacao(usuarioId, this.mesSelecionado);
 
 			const despesas = dados.filter((item) => item.tipo === "Despesa");
