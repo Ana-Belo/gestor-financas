@@ -55,23 +55,6 @@ export async function addNotificacao(usuarioId: string, mensagem: string) {
     return data;
 }
 
-// Atualiza uma notificação
-export async function updateNotificacao(notificacaoId: string, mensagem: string) {
-    const { data, error } = await supabase
-        .from('notificacoes')
-        .update({
-            mensagem
-        })
-        .eq('id', notificacaoId);
-
-    if (error) {
-        console.error('Erro ao atualizar notificação:', error.message);
-        throw error;
-    }
-
-    return data;
-}
-
 // Exclui uma notificação
 export async function deleteNotificacao(notificacaoId: string) {
     const { data, error } = await supabase
@@ -81,6 +64,21 @@ export async function deleteNotificacao(notificacaoId: string) {
 
     if (error) {
         console.error('Erro ao deletar notificação:', error.message);
+        throw error;
+    }
+
+    return data;
+}
+
+// Atualiza uma notificação
+export async function updateNotificacao(notificacaoId: string, dataAtualizacao: object) {
+    const { data, error } = await supabase
+        .from('notificacoes')
+        .update(dataAtualizacao)
+        .eq('id', notificacaoId);
+
+    if (error) {
+        console.error('Erro ao atualizar notificação:', error.message);
         throw error;
     }
 
